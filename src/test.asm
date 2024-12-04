@@ -1,5 +1,6 @@
 EXTRN INPUT_MAIN_LOOP: FAR
 EXTRN Draw_Single_Rect: FAR
+EXTRN Draw_Ball
 PUBLIC PADDLE_X
 PUBLIC PADDLE_Y
 PUBLIC PADDLE_WIDTH
@@ -16,6 +17,9 @@ PUBLIC BORDER_BOTTOM
 PUBLIC BLACK
 PUBLIC WHITE
 
+PUBLIC Ball_X
+PUBLIC Ball_Y
+PUBLIC Ball_Size
 
 .MODEL SMALL
 .STACK 100H
@@ -42,6 +46,11 @@ PUBLIC WHITE
      ; NEEDED COLORS
      BLACK         DB 0
      WHITE         DB 15
+     ; BALL DATA
+     Ball_X        DB 15
+     Ball_Y        DB 15
+     Ball_Size     DB 3
+
 
 
 .CODE
