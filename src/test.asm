@@ -1,6 +1,6 @@
 EXTRN INPUT_MAIN_LOOP: FAR
 EXTRN Draw_Single_Rect: FAR
-EXTRN Draw_Ball
+EXTRN Draw_Ball: FAR
 PUBLIC PADDLE_X
 PUBLIC PADDLE_Y
 PUBLIC PADDLE_WIDTH
@@ -29,7 +29,7 @@ PUBLIC Ball_Size
      PADDLE_Y      DW 96H
      PADDLE_WIDTH  DW 40
      PADDLE_HEIGHT DW 6
-     PADDLE_COLOR  DW 4
+     PADDLE_COLOR  DB 4
      PADDLE_SPEED  DW 5
 
      ; SCREEN INFO
@@ -80,6 +80,17 @@ MAIN PROC
           INT  10H
 
      ; DRAW PADDLE
+          MOV  AX, PADDLE_X
+          MOV  DX, 320
+          MUL  DX
+          ADD  AX, PADDLE_Y
+          MOV  DI, AX
+
+
+          MOV  DX, PADDLE_HEIGHT
+          mov  si, PADDLE_WIDTH
+     ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
+          MOV  AL, PADDLE_COLOR
           CALL Draw_Single_Rect
 
      ; MAIN LOOP

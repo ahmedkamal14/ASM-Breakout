@@ -34,20 +34,10 @@ Draw_Single_Rect proc
     ; mov dx, 10d
     ; mov di, 650d
     ; STORE THE VALUE OF  PADDLE_X IN AX THEN MULTIPLY IT BY 320 AND THEN ADD PADDLE_Y THEN STORE IT IN DI
-                         MOV  AX, PADDLE_X
-                         MOV  DX, 320
-                         MUL  DX
-                         ADD  AX, PADDLE_Y
-                         MOV  DI, AX
-
-
-                         MOV  DX, PADDLE_HEIGHT
-                         mov  si, PADDLE_WIDTH
-    ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
-                         MOV  AL, PADDLE_COLOR
+                        
     DRAW_IN_ROW:         
+
                          mov  bx, di
-                         MOV  AL, PADDLE_COLOR
     ;mov al,0eh
     ;mov cx,18
                          mov  cx, si
@@ -56,6 +46,7 @@ Draw_Single_Rect proc
                          add  di, 320d
                          dec  dx
                          jnz  DRAW_IN_ROW
+                         RET
 Draw_Single_Rect endp
 Draw_Ball PROC
     ;initialization
