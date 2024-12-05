@@ -43,7 +43,6 @@ Draw_Single_Rect proc
                      MOV AL, PADDLE_COLOR
     DRAW_IN_ROW:     
                      mov bx, di
-                     MOV AL, PADDLE_COLOR
     ;mov al,0eh
     ;mov cx,18
                      mov cx, si

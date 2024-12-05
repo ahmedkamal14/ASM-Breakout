@@ -1,7 +1,11 @@
 ; This File contains functions related to user input
 PUBLIC INPUT_MAIN_LOOP
 EXTRN Draw_Single_Rect: FAR
-EXTRN PADDLE_Y
+EXTRN PADDLE_Y  
+EXTRN PADDLE_X
+EXTRN PADDLE_HEIGHT
+EXTRN PADDLE_WIDTH
+EXTRN PADDLE_COLOR
 EXTRN PADDLE_SPEED
 EXTRN BORDER_LEFT
 EXTRN BORDER_RIGHT
@@ -41,6 +45,18 @@ INPUT_MAIN_LOOP PROC
                           MOV  [PADDLE_Y], AX
     INPUT_MOVE_LEFT_DONE: 
                           CALL INPUT_CLEAR_SCREEN
+
+                          MOV  AX, PADDLE_X
+                          MOV  DX, 320
+                          MUL  DX
+                          ADD  AX, PADDLE_Y
+                          MOV  DI, AX
+
+                          MOV  DX, PADDLE_HEIGHT
+                          mov  si, PADDLE_WIDTH
+
+                          MOV  AL, PADDLE_COLOR
+
                           CALL Draw_Single_Rect
                           JMP  INPUT_MAIN_LOOP
 
@@ -53,6 +69,18 @@ INPUT_MAIN_LOOP PROC
                           MOV  [PADDLE_Y], AX
     INPUT_MOVE_RIGHT_DONE:
                           CALL INPUT_CLEAR_SCREEN
+
+                          MOV  AX, PADDLE_X
+                          MOV  DX, 320
+                          MUL  DX
+                          ADD  AX, PADDLE_Y
+                          MOV  DI, AX
+
+                          MOV  DX, PADDLE_HEIGHT
+                          mov  si, PADDLE_WIDTH
+
+                          MOV  AL, PADDLE_COLOR
+
                           CALL Draw_Single_Rect
                           JMP  INPUT_MAIN_LOOP
     
