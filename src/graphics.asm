@@ -101,10 +101,18 @@ Draw_Bricks PROC
 
     ;Outer loop for each row
     Draw_Row_Loop:       
+                         PUSH AX
+    
+    ;Set AX with the number of pixel row
+                         MOV  BX, Brick_Height
+                         ADD  BX, Gap_Y
+                         PUSH DX
+                         MUL  BX
+                         POP  DX
 
     ;Set BX to the beginning of the row
                          XOR  BX, BX
-    
+
     ;Inner loop for each column
     Draw_Col_Loop:       
 
@@ -119,18 +127,9 @@ Draw_Bricks PROC
                          ADD  BX, Gap_X
                          PUSH DX
                          MUL  BX
-                         POP DX
+                         POP  DX
                          MOV  BX, AX
                          POP  AX
-
-    ;Set AX with the number of pixel row
-                         PUSH BX
-                         MOV  BX, Brick_Height
-                         ADD  BX, Gap_Y
-                         PUSH DX
-                         MUL  BX
-                         POP DX
-                         POP  BX
 
 
     ;Multiply AX (y) * 320 + BX (x)
@@ -138,21 +137,21 @@ Draw_Bricks PROC
                          MOV  BX, 320
                          PUSH DX
                          MUL  BX
-                         POP DX
+                         POP  DX
                          POP  BX
                          ADD  AX, BX
                          MOV  DI, AX
                          MOV  AL, Brick_Color
 
-                         PUSH BX
-                         PUSH AX
+    ;  PUSH BX
+    ;  PUSH AX
                          PUSH SI
                          PUSH DX
                          CALL Draw_Single_Rect
                          POP  DX
                          POP  SI
-                         POP  AX
-                         POP  BX
+    ;  POP  AX
+    ;  POP  BX
 
                          POP  BX
                          POP  AX
@@ -161,6 +160,7 @@ Draw_Bricks PROC
 
                          CMP  BX, 10
                          JNE  Draw_Col_Loop
+                         POP  AX
 
                          INC  AX
 
