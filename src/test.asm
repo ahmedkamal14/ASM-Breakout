@@ -34,11 +34,11 @@ PUBLIC Gap_Y
 .STACK 100H
 .DATA
      ; PADDLE DATA
-     PADDLE_X      DW 96H
-     PADDLE_Y      DW 96H
+     PADDLE_X      DW 180
+     PADDLE_Y      DW 140
      PADDLE_WIDTH  DW 40
      PADDLE_HEIGHT DW 6
-     PADDLE_COLOR  DB 4
+     PADDLE_COLOR  DB 8
      PADDLE_SPEED  DW 5
 
      ; SCREEN INFO
@@ -62,13 +62,13 @@ PUBLIC Gap_Y
      Ball_Size     DB 3
 
      ;BRICKS DATA
-     Brick_Width   DW 30
-     Brick_Height  DW 18
-     Brick_Color   DB 3
+     Brick_Width   DW 35
+     Brick_Height  DW 9
+     Brick_Color   DB 9
      Rows_Number DB 5
      Cols_Number DB 10
-     Gap_X DB 2
-     Gap_Y DB 2
+     Gap_X DW 5
+     Gap_Y DW 5
 
 
 

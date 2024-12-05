@@ -129,6 +129,7 @@ Draw_Bricks PROC
                          MUL  BX
                          POP  DX
                          MOV  BX, AX
+                         ADD BX, 3
                          POP  AX
 
 
@@ -158,7 +159,7 @@ Draw_Bricks PROC
 
                          INC  BX
 
-                         CMP  BX, 10
+                         CMP  BX, 8
                          JNE  Draw_Col_Loop
                          POP  AX
 
