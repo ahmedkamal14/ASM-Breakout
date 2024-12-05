@@ -1,6 +1,7 @@
 EXTRN INPUT_MAIN_LOOP: FAR
 EXTRN Draw_Single_Rect: FAR
 EXTRN Draw_Ball: FAR
+EXTRN Draw_Bricks: FAR
 PUBLIC PADDLE_X
 PUBLIC PADDLE_Y
 PUBLIC PADDLE_WIDTH
@@ -20,6 +21,14 @@ PUBLIC WHITE
 PUBLIC Ball_X
 PUBLIC Ball_Y
 PUBLIC Ball_Size
+
+PUBLIC Brick_Width 
+PUBLIC Brick_Height
+PUBLIC Brick_Color 
+PUBLIC Rows_Number 
+PUBLIC Cols_Number 
+PUBLIC Gap_X
+PUBLIC Gap_Y
 
 .MODEL SMALL
 .STACK 100H
@@ -46,10 +55,20 @@ PUBLIC Ball_Size
      ; NEEDED COLORS
      BLACK         DB 0
      WHITE         DB 15
+
      ; BALL DATA
      Ball_X        DB 15
      Ball_Y        DB 15
      Ball_Size     DB 3
+
+     ;BRICKS DATA
+     Brick_Width   DW 30
+     Brick_Height  DW 18
+     Brick_Color   DB 3
+     Rows_Number DB 5
+     Cols_Number DB 10
+     Gap_X DB 2
+     Gap_Y DB 2
 
 
 
@@ -92,6 +111,10 @@ MAIN PROC
      ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
           MOV  AL, PADDLE_COLOR
           CALL Draw_Single_Rect
+
+
+     ;CALL Draw_Bricks
+          CALL Draw_Bricks
 
      ; MAIN LOOP
           CALL INPUT_MAIN_LOOP

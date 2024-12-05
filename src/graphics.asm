@@ -1,5 +1,7 @@
 PUBLIC Draw_Single_Rect
 PUBLIC Draw_Ball
+PUBLIC Draw_Bricks
+
 EXTRN PADDLE_X
 EXTRN PADDLE_Y
 EXTRN PADDLE_WIDTH
@@ -8,6 +10,13 @@ EXTRN PADDLE_COLOR:BYTE
 EXTRN Ball_X
 EXTRN Ball_Y
 EXTRN Ball_Size
+EXTRN Brick_Width 
+EXTRN Brick_Height
+EXTRN Brick_Color: BYTE
+EXTRN Rows_Number 
+EXTRN Cols_Number 
+EXTRN Gap_X
+EXTRN Gap_Y
 
 .model small
 .stack 100h
@@ -74,6 +83,99 @@ Draw_Ball PROC
 
                          RET
                          ENDP Draw_Ball
+
+Draw_Bricks PROC
+
+    ;Store all used registers
+                         PUSH AX
+                         PUSH BX
+                         PUSH CX
+                         PUSH DX
+
+                         XOR  AX,AX
+                         XOR  BX,BX
+
+    ;Set brick's width and height
+                         MOV  SI, Brick_Width
+                         MOV  DX, Brick_Height
+
+    ;Outer loop for each row
+    Draw_Row_Loop:       
+
+    ;Set BX to the beginning of the row
+                         XOR  BX, BX
+    
+    ;Inner loop for each column
+    Draw_Col_Loop:       
+
+    ;Store AX, bx
+                         PUSH AX
+                         PUSH BX
+
+    ;Set BX with the number of pixel col
+                         PUSH AX
+                         MOV  AX, BX
+                         MOV  BX, Brick_Width
+                         ADD  BX, Gap_X
+                         PUSH DX
+                         MUL  BX
+                         POP DX
+                         MOV  BX, AX
+                         POP  AX
+
+    ;Set AX with the number of pixel row
+                         PUSH BX
+                         MOV  BX, Brick_Height
+                         ADD  BX, Gap_Y
+                         PUSH DX
+                         MUL  BX
+                         POP DX
+                         POP  BX
+
+
+    ;Multiply AX (y) * 320 + BX (x)
+                         PUSH BX
+                         MOV  BX, 320
+                         PUSH DX
+                         MUL  BX
+                         POP DX
+                         POP  BX
+                         ADD  AX, BX
+                         MOV  DI, AX
+                         MOV  AL, Brick_Color
+
+                         PUSH BX
+                         PUSH AX
+                         PUSH SI
+                         PUSH DX
+                         CALL Draw_Single_Rect
+                         POP  DX
+                         POP  SI
+                         POP  AX
+                         POP  BX
+
+                         POP  BX
+                         POP  AX
+
+                         INC  BX
+
+                         CMP  BX, 10
+                         JNE  Draw_Col_Loop
+
+                         INC  AX
+
+                         CMP  AX, 5
+                         JNE  Draw_Row_Loop
+
+    
+    Continue:            
+
+                         POP  DX
+                         POP  CX
+                         POP  BX
+                         POP  AX
+                         RET
+                         ENDP Draw_Bricks
 
 end Draw_Single_Rect
 
