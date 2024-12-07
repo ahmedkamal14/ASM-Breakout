@@ -57,18 +57,18 @@ PUBLIC Gap_Y
      WHITE         DB 15
 
      ; BALL DATA
-     Ball_X        DB 15
-     Ball_Y        DB 15
-     Ball_Size     DB 3
+     Ball_X        DW 160
+     Ball_Y        DW 158
+     Ball_Size     DW 4
 
      ;BRICKS DATA
      Brick_Width   DW 35
      Brick_Height  DW 9
      Brick_Color   DB 9
-     Rows_Number DB 5
-     Cols_Number DB 10
-     Gap_X DW 5
-     Gap_Y DW 5
+     Rows_Number   DB 5
+     Cols_Number   DB 10
+     Gap_X         DW 5
+     Gap_Y         DW 5
 
 
 
@@ -115,6 +115,9 @@ MAIN PROC
 
      ;CALL Draw_Bricks
           CALL Draw_Bricks
+
+     ;Draw ball
+          CALL Draw_Ball
 
      ; MAIN LOOP
           CALL INPUT_MAIN_LOOP
