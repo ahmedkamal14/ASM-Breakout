@@ -29,6 +29,7 @@ PUBLIC Rows_Number
 PUBLIC Cols_Number 
 PUBLIC Gap_X
 PUBLIC Gap_Y
+PUBLIC Bricks_States
 
 .MODEL SMALL
 .STACK 100H
@@ -69,6 +70,7 @@ PUBLIC Gap_Y
      Cols_Number   DB 10
      Gap_X         DW 5
      Gap_Y         DW 5
+     Bricks_States db 40 DUP(1)
 
 
 
@@ -111,6 +113,12 @@ MAIN PROC
      ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
           MOV  AL, PADDLE_COLOR
           CALL Draw_Single_Rect
+
+     ;Test drawing destroyed bricks
+     MOV SI, 8
+     MOV byte ptr [Bricks_States + si], 0
+     MOV SI, 11
+     MOV byte ptr [Bricks_States + si], 0
 
 
      ;CALL Draw_Bricks

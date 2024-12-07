@@ -16,7 +16,8 @@ EXTRN Brick_Color: BYTE
 EXTRN Rows_Number 
 EXTRN Cols_Number 
 EXTRN Gap_X
-EXTRN Gap_Y
+EXTRN Gap_Y 
+EXTRN Bricks_States: BYTE
 
 .model small
 .stack 100h
@@ -104,6 +105,7 @@ Draw_Bricks PROC
                          PUSH AX
     
     ;Set AX with the number of pixel row
+                         MOV  CX,AX
                          MOV  BX, Brick_Height
                          ADD  BX, Gap_Y
                          PUSH DX
@@ -120,6 +122,22 @@ Draw_Bricks PROC
                          PUSH AX
                          PUSH BX
 
+    ;Check the state of the brick
+                         PUSH AX
+                         PUSH DX
+                         PUSH SI
+                         MOV  AX,CX
+                         MOV  DX, 8
+                         MUL  DX
+                         ADD  AX, BX
+                         MOV  SI, AX
+                         MOV  AL, [Bricks_States+si]
+                         CMP  AL, 1
+                         POP  SI
+                         POP  DX
+                         POP  AX
+                         JNE  Skip_Brick
+
     ;Set BX with the number of pixel col
                          PUSH AX
                          MOV  AX, BX
@@ -129,7 +147,7 @@ Draw_Bricks PROC
                          MUL  BX
                          POP  DX
                          MOV  BX, AX
-                         ADD BX, 3
+                         ADD  BX, 3
                          POP  AX
 
 
@@ -146,14 +164,18 @@ Draw_Bricks PROC
 
     ;  PUSH BX
     ;  PUSH AX
+
+    ;Draw brick
                          PUSH SI
                          PUSH DX
+                         PUSH CX
                          CALL Draw_Single_Rect
+                         POP CX
                          POP  DX
                          POP  SI
     ;  POP  AX
     ;  POP  BX
-
+    Skip_Brick:          
                          POP  BX
                          POP  AX
 
@@ -169,7 +191,6 @@ Draw_Bricks PROC
                          JNE  Draw_Row_Loop
 
     
-    Continue:            
 
                          POP  DX
                          POP  CX
