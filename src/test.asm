@@ -1,6 +1,7 @@
 EXTRN INPUT_MAIN_LOOP: FAR
 EXTRN Draw_Single_Rect: FAR
-EXTRN Draw_Ball
+EXTRN Draw_Ball: FAR
+EXTRN Draw_Bricks: FAR
 PUBLIC PADDLE_X
 PUBLIC PADDLE_Y
 PUBLIC PADDLE_WIDTH
@@ -21,15 +22,23 @@ PUBLIC Ball_X
 PUBLIC Ball_Y
 PUBLIC Ball_Size
 
+PUBLIC Brick_Width 
+PUBLIC Brick_Height
+PUBLIC Brick_Color 
+PUBLIC Rows_Number 
+PUBLIC Cols_Number 
+PUBLIC Gap_X
+PUBLIC Gap_Y
+
 .MODEL SMALL
 .STACK 100H
 .DATA
      ; PADDLE DATA
-     PADDLE_X      DW 96H
-     PADDLE_Y      DW 96H
+     PADDLE_X      DW 180
+     PADDLE_Y      DW 140
      PADDLE_WIDTH  DW 40
      PADDLE_HEIGHT DW 6
-     PADDLE_COLOR  DW 4
+     PADDLE_COLOR  DB 8
      PADDLE_SPEED  DW 5
 
      ; SCREEN INFO
@@ -46,10 +55,20 @@ PUBLIC Ball_Size
      ; NEEDED COLORS
      BLACK         DB 0
      WHITE         DB 15
+
      ; BALL DATA
-     Ball_X        DB 15
-     Ball_Y        DB 15
-     Ball_Size     DB 3
+     Ball_X        DW 160
+     Ball_Y        DW 158
+     Ball_Size     DW 4
+
+     ;BRICKS DATA
+     Brick_Width   DW 35
+     Brick_Height  DW 9
+     Brick_Color   DB 9
+     Rows_Number   DB 5
+     Cols_Number   DB 10
+     Gap_X         DW 5
+     Gap_Y         DW 5
 
 
 
@@ -80,7 +99,25 @@ MAIN PROC
           INT  10H
 
      ; DRAW PADDLE
+          MOV  AX, PADDLE_X
+          MOV  DX, 320
+          MUL  DX
+          ADD  AX, PADDLE_Y
+          MOV  DI, AX
+
+
+          MOV  DX, PADDLE_HEIGHT
+          mov  si, PADDLE_WIDTH
+     ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
+          MOV  AL, PADDLE_COLOR
           CALL Draw_Single_Rect
+
+
+     ;CALL Draw_Bricks
+          CALL Draw_Bricks
+
+     ;Draw ball
+          CALL Draw_Ball
 
      ; MAIN LOOP
           CALL INPUT_MAIN_LOOP
