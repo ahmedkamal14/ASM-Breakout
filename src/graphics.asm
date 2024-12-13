@@ -94,7 +94,7 @@ Initialize_Bricks_Positions PROC
                                 PUSH DX
                                 PUSH SI
 
-                                XOR  CX,CX
+                                XOR  CX, CX
                                 XOR  DX,DX
 
     Initialize_Row_Loop:        
@@ -105,6 +105,7 @@ Initialize_Bricks_Positions PROC
                                 ADD  BX, Gap_Y
                                 PUSH DX
                                 MUL  BX
+                                ADD  AX,14
                                 POP  DX
 
 
@@ -166,7 +167,7 @@ Initialize_Bricks_Positions PROC
 
                                 INC  CX
 
-                                CMP  CX, 5
+                                CMP  CX, 4
                                 JNE  Initialize_Row_Loop
 
                                 POP  SI
@@ -192,10 +193,10 @@ Draw_Bricks PROC
 
     ;Set brick's width and height
                                 MOV  DX, Brick_Height
-    Draw_Row_Loop:          
+    Draw_Row_Loop:              
                                 XOR  BX, BX
 
-    Draw_Col_Loop:          
+    Draw_Col_Loop:              
     
     ;Check the state of the brick
                                 PUSH AX
@@ -254,7 +255,7 @@ Draw_Bricks PROC
                                 POP  BX
                                 POP  AX
    
-    Skip_Brick:             
+    Skip_Brick:                 
 
                                 INC  BX
                                 INC  SI
@@ -264,7 +265,7 @@ Draw_Bricks PROC
 
                                 INC  AX
 
-                                CMP  AX, 5
+                                CMP  AX, 4
                                 JNE  Draw_Row_Loop
 
                                 POP  SI

@@ -10,27 +10,33 @@ EXTRN PADDLE_SPEED
 EXTRN BORDER_LEFT
 EXTRN BORDER_RIGHT
 EXTRN BLACK:BYTE
+EXTRN WHITE:BYTE
 EXTRN SCREEN_SIZE
+
 
 
 .MODEL SMALL
 .STACK 100H
+.DATA
+    ; Variables related to user input
+    SCREEN_HEIGHT EQU 200
+    SCREEN_WIDTH  EQU 320
 .CODE
 
 INPUT_MAIN_LOOP PROC
 
     ; WAIT FOR KEY PRESSED
                           MOV  AH, 00H
-                          INT  16H                      ; -> AH = SCAN CODE, AL = ASCII
+                          INT  16H                               ; -> AH = SCAN CODE, AL = ASCII
                        
 
     ; CHECK FOR KEY PRESSED
-                          CMP  AH, 4BH                  ; LEFT ARROW CLICKED
+                          CMP  AH, 4BH                           ; LEFT ARROW CLICKED
                           JE   INPUT_MOVE_LEFT
-                          CMP  AH, 4DH                  ; RIGHT ARROW CLICKED
+                          CMP  AH, 4DH                           ; RIGHT ARROW CLICKED
                           JE   INPUT_MOVE_RIGHT
 
-                          CMP  AH, 01H                  ; ESC KEY PRESSED
+                          CMP  AH, 01H                           ; ESC KEY PRESSED
                           JE   INPUT_EXIT
 
                           JMP  INPUT_MAIN_LOOP
@@ -89,8 +95,8 @@ INPUT_MAIN_LOOP PROC
     INPUT_CLEAR_SCREEN:   
                           MOV  AX, 0A000h
                           MOV  ES, AX
-                          MOV  DI, 0
-                          MOV  CX, SCREEN_SIZE
+                          MOV  DI, (SCREEN_HEIGHT - 20) * 320
+                          MOV  CX, 2000
                           MOV  AL, BLACK
                           REP  STOSB
                           RET

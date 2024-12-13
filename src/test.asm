@@ -3,6 +3,9 @@ EXTRN Draw_Single_Rect: FAR
 EXTRN Draw_Ball: FAR
 EXTRN Draw_Bricks: FAR
 EXTRN Initialize_Bricks_Positions: FAR
+EXTRN DRAW_SCORES: FAR
+
+
 PUBLIC PADDLE_X
 PUBLIC PADDLE_Y
 PUBLIC PADDLE_WIDTH
@@ -32,6 +35,13 @@ PUBLIC Gap_X
 PUBLIC Gap_Y
 PUBLIC Bricks_States
 PUBLIC Bricks_Positions
+
+ ; SCORE DATA AND LIVES
+PUBLIC SCORE
+PUBLIC LIVES
+PUBLIC ENDING
+PUBLIC SCORE_COUNT
+PUBLIC LIVES_COUNT
 
 .MODEL SMALL
 .STACK 100H
@@ -74,6 +84,13 @@ PUBLIC Bricks_Positions
      Gap_Y            DW 5
      Bricks_States    DB 40 DUP(1)
      Bricks_Positions DW 80 DUP(?)
+
+     ; SCORE DATA AND LIVES
+     SCORE            DB 'SCORE: $'
+     LIVES            DB '              LIVES: $'
+     ENDING           DB '$'
+     SCORE_COUNT      DW 0
+     LIVES_COUNT      DB 51
 
 
 
@@ -124,7 +141,10 @@ MAIN PROC
      ; MOV  byte ptr [Bricks_States + si], 0
 
      ;Store the positions of bricks into Bricks_Positions
-          CALL Initialize_Bricks_Positions      
+          CALL Initialize_Bricks_Positions
+
+     ;Draw Scores
+          CALL DRAW_SCORES
 
      ;Draw Bricks
           CALL Draw_Bricks

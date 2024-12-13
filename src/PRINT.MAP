@@ -1,0 +1,12 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00049H 0004AH _TEXT              CODE
+ 00050H 00050H 00000H _DATA              DATA
+ 00050H 0014FH 00100H STACK              STACK
+
+Error: Undefined symbol SCORE in module D:\PRINT.ASM
+Error: Undefined symbol LIVES in module D:\PRINT.ASM
+Error: Undefined symbol SCORE_COUNT in module D:\PRINT.ASM
+Program entry point at 0000:0000
+

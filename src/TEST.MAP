@@ -1,10 +1,15 @@
 
  Start  Stop   Length Name               Class
 
- 00000H 0004CH 0004DH _TEXT              CODE
- 00050H 00076H 00027H _DATA              DATA
- 00080H 0017FH 00100H STACK              STACK
+ 00000H 00064H 00065H _TEXT              CODE
+ 00070H 00185H 00116H _DATA              DATA
+ 00190H 0028FH 00100H STACK              STACK
 
+Error: Undefined symbol DRAW_SINGLE_RECT in module D:\TEST.ASM
+Error: Undefined symbol INITIALIZE_BRICKS_POSITIONS in module D:\TEST.ASM
+Error: Undefined symbol DRAW_SCORES in module D:\TEST.ASM
 Error: Undefined symbol DRAW_BRICKS in module D:\TEST.ASM
+Error: Undefined symbol DRAW_BALL in module D:\TEST.ASM
+Error: Undefined symbol INPUT_MAIN_LOOP in module D:\TEST.ASM
 Program entry point at 0000:0000
 
