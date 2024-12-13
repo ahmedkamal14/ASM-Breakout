@@ -1,11 +1,15 @@
 EXTRN INPUT_MAIN_LOOP: FAR
 EXTRN Draw_Single_Rect: FAR
 EXTRN Draw_Ball: FAR
-EXTRN  Draw_Black_Ball: FAR
 EXTRN Draw_Bricks: FAR
 EXTRN Initialize_Bricks_Positions: FAR
+EXTRN DRAW_SCORES: FAR
+
+; BALL INT
 EXTRN Move_Ball: FAR
 EXTRN Clear_Screen: FAR
+EXTRN Draw_Black_Ball: FAR
+
 PUBLIC PADDLE_X
 PUBLIC PADDLE_Y
 PUBLIC PADDLE_WIDTH
@@ -21,10 +25,10 @@ PUBLIC BORDER_TOP
 PUBLIC BORDER_BOTTOM
 PUBLIC BLACK
 PUBLIC WHITE
+
 PUBLIC Ball_X
 PUBLIC Ball_Y
 PUBLIC Ball_Size
-PUBLIC BALL_COLOR
 
 PUBLIC Brick_Width 
 PUBLIC Brick_Height
@@ -36,9 +40,18 @@ PUBLIC Gap_Y
 PUBLIC Bricks_States
 PUBLIC Bricks_Positions
 
+ ; SCORE DATA AND LIVES
+PUBLIC SCORE
+PUBLIC LIVES
+PUBLIC ENDING
+PUBLIC SCORE_COUNT
+PUBLIC LIVES_COUNT
+
+; BALL DATA
 PUBLIC Ball_Velocity_X
 PUBLIC Ball_Velocity_Y
 PUBLIC Prev_Time
+
 .MODEL SMALL
 .STACK 100H
 .DATA
@@ -49,24 +62,23 @@ PUBLIC Prev_Time
      PADDLE_HEIGHT    DW  6
      PADDLE_COLOR     DB  8
      PADDLE_SPEED     DW  5
-   
+
      ; SCREEN INFO
      SCREEN_WIDTH     DW  320
      SCREEN_HEIGHT    DW  200
      SCREEN_SIZE      DW  ?                                 ; SCREEN_WIDTH * SCREEN_HEIGHT
-    
+
      ; BORDERS
      BORDER_LEFT      DW  0
      BORDER_RIGHT     DW  ?                                 ; SCREEN_WIDTH - PADDLE_WIDTH
      BORDER_TOP       DW  0
      BORDER_BOTTOM    DW  SCREEN_HEIGHT - PADDLE_HEIGHT
-    
+
      ; NEEDED COLORS
      BLACK            DB  0
      WHITE            DB  15
-    
 
-   
+     ; BALL DATA
      Ball_X           DW  160
      Ball_Y           DW  158
      Ball_Size        DW  4
@@ -85,8 +97,17 @@ PUBLIC Prev_Time
      Gap_Y            DW  5
      Bricks_States    DB  40 DUP(1)
      Bricks_Positions DW  80 DUP(?)
-    
+
+     ; SCORE DATA AND LIVES
+     SCORE            DB  'SCORE: $'
+     LIVES            DB  '              LIVES: $'
+     ENDING           DB  '$'
+     SCORE_COUNT      DW  0
+     LIVES_COUNT      DB  51
+
      FRAME_DELAY      EQU 64
+
+
 
 .CODE
 
@@ -126,6 +147,7 @@ MAIN PROC
                       mov  si, PADDLE_WIDTH
      ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
                       MOV  AL, PADDLE_COLOR
+                      CALL Draw_Single_Rect
 
      ;Test drawing destroyed bricks
      ; MOV  SI, 8
@@ -134,28 +156,37 @@ MAIN PROC
      ; MOV  byte ptr [Bricks_States + si], 0
 
      ;Store the positions of bricks into Bricks_Positions
-                      CALL Draw_Single_Rect
                       CALL Initialize_Bricks_Positions
+
+     ;Draw Scores
+                      CALL DRAW_SCORES
 
      ;Draw Bricks
                       CALL Draw_Bricks
 
-                    
      ;Draw ball
-                      
+                      CALL Draw_Ball
 
-
+     ; MAIN LOOP
      Check_Time_Label:
-                      MOV  AH,2CH
 
+                      MOV  AH,2CH
                       INT  21H
                       
                       CMP  DL,Prev_Time
                       JE   Check_Time_label
                       MOV  Prev_Time,DL
 
-                       
-
+                    
+                      PUSH AX
+                      PUSH BX
+                      PUSH CX
+                      PUSH DX
+                      CALL INPUT_MAIN_LOOP
+                      POP  DX
+                      POP  CX
+                      POP  BX
+                      POP  AX
 
 
                       mov  BALL_COLOR,0
@@ -164,11 +195,15 @@ MAIN PROC
                       CALL Move_Ball
                       CALL Draw_Ball
 
-                  
-                      JMP  Check_Time_label
+                      push dx
+                      push ax
+                      MOV  DX, PADDLE_HEIGHT
+                      MOV  AL, PADDLE_COLOR
+     ;CALL Draw_Single_Rect
+                      pop  ax
+                      pop  dx
 
-     ; MAIN LOOP
-                      CALL INPUT_MAIN_LOOP
+                      JMP  Check_Time_label
 
      ; RESTORE VIDEO MODE
      ;   MOV  AH, 0
