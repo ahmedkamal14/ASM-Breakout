@@ -1,6 +1,7 @@
 EXTRN INPUT_MAIN_LOOP: FAR
 EXTRN Draw_Single_Rect: FAR
 EXTRN Draw_Ball: FAR
+EXTRN  Draw_Black_Ball: FAR
 EXTRN Draw_Bricks: FAR
 EXTRN Move_Ball: FAR
 EXTRN Clear_Screen: FAR
@@ -22,6 +23,7 @@ PUBLIC WHITE
 PUBLIC Ball_X
 PUBLIC Ball_Y
 PUBLIC Ball_Size
+PUBLIC BALL_COLOR
 
 PUBLIC Brick_Width 
 PUBLIC Brick_Height
@@ -67,6 +69,7 @@ PUBLIC Prev_Time
      Ball_Velocity_X DW  4
      Ball_Velocity_Y DW  4
      Prev_Time       DB  0
+     BALL_COLOR      DB  0
 
      ;BRICKS DATA
      Brick_Width     DW  35
@@ -119,10 +122,10 @@ MAIN PROC
                       MOV  AL, PADDLE_COLOR
 
 
-     ;CALL Draw_Bricks
+                      CALL Draw_Single_Rect
+                      CALL Draw_Bricks
 
      ;Draw ball
-                      CALL Clear_Screen
                       
 
 
@@ -130,21 +133,32 @@ MAIN PROC
                       MOV  AH,2CH
 
                       INT  21H
+                      
                       CMP  DL,Prev_Time
                       JE   Check_Time_label
                       MOV  Prev_Time,DL
 
                        
-     ;CALL Draw_Bricks
-     ;CALL Draw_Single_Rect
-                      CALL Clear_Screen
-                      CALL Draw_Ball
-                      CALL Move_Ball
 
+
+
+                      mov  BALL_COLOR,0
+                      CALL Draw_Black_Ball
+                      MOV  BALL_COLOR,14
+                      CALL Move_Ball
+                      CALL Draw_Ball
+
+                      push dx
+                      push ax
+                      MOV  DX, PADDLE_HEIGHT
+                      MOV  AL, PADDLE_COLOR
+     ;CALL Draw_Single_Rect
+                      pop  ax
+                      pop  dx
                       JMP  Check_Time_label
 
      ; MAIN LOOP
-     ;CALL INPUT_MAIN_LOOP
+                      CALL INPUT_MAIN_LOOP
 
      ; RESTORE VIDEO MODE
      ;   MOV  AH, 0
