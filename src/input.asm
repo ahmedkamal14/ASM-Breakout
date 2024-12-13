@@ -25,26 +25,31 @@ EXTRN SCREEN_SIZE
 
 INPUT_MAIN_LOOP PROC
 
-    ; CHECK KEY PRESSED
-                          MOV  AH, 1H
-                          INT  16H                               ; -> AH = SCAN CODE, AL = ASCII
+        
+
+    
+    ; CHECK IF A KEY IS PRESSED
+                          MOV  AH, 01H
+                          INT  16H
                           JZ   INPUT_EXIT
 
-    ; ; WAIT FOR KEY PRESSED
-    ;                         MOV AH, 0H
-    ;                         INT 16H
-    ; CHECK FOR KEY PRESSED
-                          CMP  AH, 4BH                           ; LEFT ARROW CLICKED
+    ; FETCH THE KEY DETAILS
+                          MOV  AH, 00H
+                          INT  16H
+
+    ; HANDLE LEFT ARROW KEY
+                          CMP  AH, 4BH
                           JE   INPUT_MOVE_LEFT
-                          CMP  AH, 4DH                           ; RIGHT ARROW CLICKED
+
+    ; HANDLE RIGHT ARROW KEY
+                          CMP  AH, 4DH
                           JE   INPUT_MOVE_RIGHT
-                          CMP  AH, 01H                           ; ESC KEY PRESSED
+
+    ; HANDLE ESC KEY
+                          CMP  AL, 1BH
                           JE   INPUT_EXIT
-
-                          JMP  INPUT_EXIT
-
     ;   JMP  INPUT_MAIN_LOOP
-
+                          ret
 
     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
     INPUT_MOVE_LEFT:      
