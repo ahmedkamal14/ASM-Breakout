@@ -3,6 +3,7 @@ PUBLIC Draw_Ball
 PUBLIC Draw_Bricks
 PUBLIC Initialize_Bricks_Positions
 
+PUBLIC  Draw_Black_Ball
 EXTRN PADDLE_X
 EXTRN PADDLE_Y
 EXTRN PADDLE_WIDTH
@@ -11,6 +12,7 @@ EXTRN PADDLE_COLOR:BYTE
 EXTRN Ball_X
 EXTRN Ball_Y
 EXTRN Ball_Size
+EXTRN BALL_COLOR :BYTE
 EXTRN Brick_Width 
 EXTRN Brick_Height
 EXTRN Brick_Color: BYTE
@@ -48,10 +50,19 @@ Draw_Single_Rect proc
     ; STORE THE VALUE OF  PADDLE_X IN AX THEN MULTIPLY IT BY 320 AND THEN ADD PADDLE_Y THEN STORE IT IN DI
                         
     DRAW_IN_ROW:                
+    DRAW_IN_ROW:                
 
+                                mov  bx, di
                                 mov  bx, di
     ;mov al,0eh
     ;mov cx,18
+                                mov  cx, si
+                                rep  stosb
+                                mov  di, bx
+                                add  di, 320d
+                                dec  dx
+                                jnz  DRAW_IN_ROW
+                                RET
                                 mov  cx, si
                                 rep  stosb
                                 mov  di, bx
@@ -64,6 +75,7 @@ Draw_Ball PROC
     ;initialization
                                 MOV  CX,Ball_Y
                                 MOV  DX, Ball_X
+                              
 
     Draw_Ball_Horizontal:       
     ;Update Columns
@@ -75,6 +87,7 @@ Draw_Ball PROC
                                 SUB  AX,Ball_Y
                                 CMP  AX,Ball_Size
                                 JNG  Draw_Ball_Horizontal
+                              
 
     ;Update Rows
                                 MOV  CX,Ball_Y
@@ -83,9 +96,37 @@ Draw_Ball PROC
                                 SUB  AX,Ball_X
                                 CMP  AX,Ball_Size
                                 JNG  Draw_Ball_Horizontal
+                               
 
                                 RET
                                 ENDP Draw_Ball
+                             
+Draw_Black_Ball PROC
+    ;initialization
+                                MOV  CX,Ball_Y
+                                MOV  DX, Ball_X
+
+    Draw_Black_Ball_Horizontal: 
+    ;Update Columns
+                                MOV  AH,0CH
+                                MOV  AL,0
+                                INT  10H
+                                INC  CX
+                                MOV  AX,CX
+                                SUB  AX,Ball_Y
+                                CMP  AX,Ball_Size
+                                JNG  Draw_Black_Ball_Horizontal
+
+    ;Update Rows
+                                MOV  CX,Ball_Y
+                                INC  DX
+                                MOV  AX,DX
+                                SUB  AX,Ball_X
+                                CMP  AX,Ball_Size
+                                JNG  Draw_Black_Ball_Horizontal
+
+                                RET
+                                ENDP Draw_Black_Ball
 
 Initialize_Bricks_Positions PROC
                                 PUSH AX
@@ -192,10 +233,10 @@ Draw_Bricks PROC
 
     ;Set brick's width and height
                                 MOV  DX, Brick_Height
-    Draw_Row_Loop:          
+    Draw_Row_Loop:              
                                 XOR  BX, BX
 
-    Draw_Col_Loop:          
+    Draw_Col_Loop:              
     
     ;Check the state of the brick
                                 PUSH AX
@@ -254,7 +295,7 @@ Draw_Bricks PROC
                                 POP  BX
                                 POP  AX
    
-    Skip_Brick:             
+    Skip_Brick:                 
 
                                 INC  BX
                                 INC  SI
@@ -277,4 +318,3 @@ Draw_Bricks PROC
                                 ENDP Draw_Bricks
 
 end Draw_Single_Rect
-
