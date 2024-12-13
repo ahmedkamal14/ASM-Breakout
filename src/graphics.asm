@@ -27,8 +27,6 @@ EXTRN Bricks_Positions
 .code
 
 
-
-
 Draw_Single_Rect proc
     ;summary:
     ;di=> pixle number
