@@ -2,6 +2,7 @@ PUBLIC Draw_Single_Rect
 PUBLIC Draw_Ball
 PUBLIC Draw_Bricks
 PUBLIC Initialize_Bricks_Positions
+PUBLIC Draw_Black_Ball
 
 EXTRN PADDLE_X
 EXTRN PADDLE_Y
@@ -276,6 +277,33 @@ Draw_Bricks PROC
 
                                 RET
                                 ENDP Draw_Bricks
+
+Draw_Black_Ball PROC
+    ;initialization
+                                MOV  CX,Ball_Y
+                                MOV  DX, Ball_X
+
+    Draw_Black_Ball_Horizontal: 
+    ;Update Columns
+                                MOV  AH,0CH
+                                MOV  AL,0
+                                INT  10H
+                                INC  CX
+                                MOV  AX,CX
+                                SUB  AX,Ball_Y
+                                CMP  AX,Ball_Size
+                                JNG  Draw_Black_Ball_Horizontal
+
+    ;Update Rows
+                                MOV  CX,Ball_Y
+                                INC  DX
+                                MOV  AX,DX
+                                SUB  AX,Ball_X
+                                CMP  AX,Ball_Size
+                                JNG  Draw_Black_Ball_Horizontal
+
+                                RET
+                                ENDP Draw_Black_Ball
 
 end Draw_Single_Rect
 

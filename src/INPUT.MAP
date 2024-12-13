@@ -1,0 +1,19 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00090H 00091H _TEXT              CODE
+ 000A0H 000A0H 00000H _DATA              DATA
+ 000A0H 0019FH 00100H STACK              STACK
+
+Error: Undefined symbol PADDLE_Y in module D:\INPUT.ASM
+Error: Undefined symbol PADDLE_SPEED in module D:\INPUT.ASM
+Error: Undefined symbol BORDER_LEFT in module D:\INPUT.ASM
+Error: Undefined symbol PADDLE_X in module D:\INPUT.ASM
+Error: Undefined symbol PADDLE_HEIGHT in module D:\INPUT.ASM
+Error: Undefined symbol PADDLE_WIDTH in module D:\INPUT.ASM
+Error: Undefined symbol PADDLE_COLOR in module D:\INPUT.ASM
+Error: Undefined symbol DRAW_SINGLE_RECT in module D:\INPUT.ASM
+Error: Undefined symbol BORDER_RIGHT in module D:\INPUT.ASM
+Error: Undefined symbol BLACK in module D:\INPUT.ASM
+Program entry point at 0000:0000
+

@@ -25,21 +25,25 @@ EXTRN SCREEN_SIZE
 
 INPUT_MAIN_LOOP PROC
 
-    ; WAIT FOR KEY PRESSED
-                          MOV  AH, 00H
+    ; CHECK KEY PRESSED
+                          MOV  AH, 1H
                           INT  16H                               ; -> AH = SCAN CODE, AL = ASCII
-                       
+                          JZ   INPUT_EXIT
 
+    ; ; WAIT FOR KEY PRESSED
+    ;                         MOV AH, 0H
+    ;                         INT 16H
     ; CHECK FOR KEY PRESSED
                           CMP  AH, 4BH                           ; LEFT ARROW CLICKED
                           JE   INPUT_MOVE_LEFT
                           CMP  AH, 4DH                           ; RIGHT ARROW CLICKED
                           JE   INPUT_MOVE_RIGHT
-
                           CMP  AH, 01H                           ; ESC KEY PRESSED
                           JE   INPUT_EXIT
 
-                          JMP  INPUT_MAIN_LOOP
+                          JMP  INPUT_EXIT
+
+    ;   JMP  INPUT_MAIN_LOOP
 
 
     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
@@ -64,7 +68,8 @@ INPUT_MAIN_LOOP PROC
                           MOV  AL, PADDLE_COLOR
 
                           CALL Draw_Single_Rect
-                          JMP  INPUT_MAIN_LOOP
+                          RET
+    ;   JMP  INPUT_MAIN_LOOP
 
     ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
     INPUT_MOVE_RIGHT:     
@@ -88,11 +93,14 @@ INPUT_MAIN_LOOP PROC
                           MOV  AL, PADDLE_COLOR
                           
                           CALL Draw_Single_Rect
-                          JMP  INPUT_MAIN_LOOP
+    ;   JMP  INPUT_MAIN_LOOP
     
+    INPUT_EXIT:           
+                          RET
 
-    ; FUNCTION TO CLEAR THE WHOLE SCREEN
-    INPUT_CLEAR_SCREEN:   
+INPUT_MAIN_LOOP ENDP
+
+INPUT_CLEAR_SCREEN PROC
                           MOV  AX, 0A000h
                           MOV  ES, AX
                           MOV  DI, (SCREEN_HEIGHT - 20) * 320
@@ -100,10 +108,7 @@ INPUT_MAIN_LOOP PROC
                           MOV  AL, BLACK
                           REP  STOSB
                           RET
+INPUT_CLEAR_SCREEN ENDP
 
-    ; EXIT PROGRAM
-    INPUT_EXIT:           
-                          RET
 
-INPUT_MAIN_LOOP ENDP
 END INPUT_MAIN_LOOP
