@@ -49,41 +49,24 @@ PUBLIC Prev_Time
      PADDLE_HEIGHT    DW  6
      PADDLE_COLOR     DB  8
      PADDLE_SPEED     DW  5
-     PADDLE_X         DW  180
-     PADDLE_Y         DW  140
-     PADDLE_WIDTH     DW  40
-     PADDLE_HEIGHT    DW  6
-     PADDLE_COLOR     DB  8
-     PADDLE_SPEED     DW  5
-
+   
      ; SCREEN INFO
      SCREEN_WIDTH     DW  320
      SCREEN_HEIGHT    DW  200
      SCREEN_SIZE      DW  ?                                 ; SCREEN_WIDTH * SCREEN_HEIGHT
-     SCREEN_WIDTH     DW  320
-     SCREEN_HEIGHT    DW  200
-     SCREEN_SIZE      DW  ?                                 ; SCREEN_WIDTH * SCREEN_HEIGHT
-
+    
      ; BORDERS
      BORDER_LEFT      DW  0
      BORDER_RIGHT     DW  ?                                 ; SCREEN_WIDTH - PADDLE_WIDTH
      BORDER_TOP       DW  0
      BORDER_BOTTOM    DW  SCREEN_HEIGHT - PADDLE_HEIGHT
-     BORDER_LEFT      DW  0
-     BORDER_RIGHT     DW  ?                                 ; SCREEN_WIDTH - PADDLE_WIDTH
-     BORDER_TOP       DW  0
-     BORDER_BOTTOM    DW  SCREEN_HEIGHT - PADDLE_HEIGHT
-
+    
      ; NEEDED COLORS
      BLACK            DB  0
      WHITE            DB  15
-     BLACK            DB  0
-     WHITE            DB  15
+    
 
-     ; BALL DATA
-     Ball_X           DW  160
-     Ball_Y           DW  158
-     Ball_Size        DW  4
+   
      Ball_X           DW  160
      Ball_Y           DW  158
      Ball_Size        DW  4
@@ -102,14 +85,7 @@ PUBLIC Prev_Time
      Gap_Y            DW  5
      Bricks_States    DB  40 DUP(1)
      Bricks_Positions DW  80 DUP(?)
-     Brick_Width      DW  35
-     Brick_Height     DW  9
-     Brick_Color      DB  9
-     Rows_Number      DB  5
-     Cols_Number      DB  10
-     Gap_X            DW  5
-     Gap_Y            DW  5
-
+    
      FRAME_DELAY      EQU 64
 
 .CODE
@@ -158,14 +134,13 @@ MAIN PROC
      ; MOV  byte ptr [Bricks_States + si], 0
 
      ;Store the positions of bricks into Bricks_Positions
+                      CALL Draw_Single_Rect
                       CALL Initialize_Bricks_Positions
 
      ;Draw Bricks
                       CALL Draw_Bricks
 
-                      CALL Draw_Single_Rect
-                      CALL Draw_Bricks
-
+                    
      ;Draw ball
                       
 
@@ -189,13 +164,7 @@ MAIN PROC
                       CALL Move_Ball
                       CALL Draw_Ball
 
-                      push dx
-                      push ax
-                      MOV  DX, PADDLE_HEIGHT
-                      MOV  AL, PADDLE_COLOR
-     ;CALL Draw_Single_Rect
-                      pop  ax
-                      pop  dx
+                  
                       JMP  Check_Time_label
 
      ; MAIN LOOP

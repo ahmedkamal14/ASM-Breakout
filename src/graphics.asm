@@ -75,10 +75,8 @@ Draw_Ball PROC
     ;initialization
                                 MOV  CX,Ball_Y
                                 MOV  DX, Ball_X
-                                MOV  CX,Ball_Y
-                                MOV  DX, Ball_X
+                              
 
-    Draw_Ball_Horizontal:       
     Draw_Ball_Horizontal:       
     ;Update Columns
                                 MOV  AH,0CH
@@ -89,14 +87,7 @@ Draw_Ball PROC
                                 SUB  AX,Ball_Y
                                 CMP  AX,Ball_Size
                                 JNG  Draw_Ball_Horizontal
-                                MOV  AH,0CH
-                                MOV  AL,14
-                                INT  10H
-                                INC  CX
-                                MOV  AX,CX
-                                SUB  AX,Ball_Y
-                                CMP  AX,Ball_Size
-                                JNG  Draw_Ball_Horizontal
+                              
 
     ;Update Rows
                                 MOV  CX,Ball_Y
@@ -105,17 +96,11 @@ Draw_Ball PROC
                                 SUB  AX,Ball_X
                                 CMP  AX,Ball_Size
                                 JNG  Draw_Ball_Horizontal
-                                MOV  CX,Ball_Y
-                                INC  DX
-                                MOV  AX,DX
-                                SUB  AX,Ball_X
-                                CMP  AX,Ball_Size
-                                JNG  Draw_Ball_Horizontal
+                               
 
                                 RET
                                 ENDP Draw_Ball
-                                RET
-                                ENDP Draw_Ball
+                             
 Draw_Black_Ball PROC
     ;initialization
                                 MOV  CX,Ball_Y
@@ -152,33 +137,11 @@ Initialize_Bricks_Positions PROC
 
                                 XOR  CX,CX
                                 XOR  DX,DX
-Draw_Bricks PROC
-
-    ;Store all used registers
-                                PUSH AX
-                                PUSH BX
-                                PUSH CX
-                                PUSH DX
-
-                                XOR  AX,AX
-                                XOR  BX,BX
-
-    ;Set brick's width and height
-                                MOV  SI, Brick_Width
-                                MOV  DX, Brick_Height
 
     Initialize_Row_Loop:        
-    ;Outer loop for each row
-    Draw_Row_Loop:              
-                                PUSH AX
     
     ;Set AX with the number of pixel row
                                 MOV  AX, CX
-                                MOV  BX, Brick_Height
-                                ADD  BX, Gap_Y
-                                PUSH DX
-                                MUL  BX
-                                POP  DX
                                 MOV  BX, Brick_Height
                                 ADD  BX, Gap_Y
                                 PUSH DX
@@ -188,32 +151,16 @@ Draw_Bricks PROC
 
     ;Set BX to the beginning of the row
                                 XOR  DX, DX
-                                XOR  BX, BX
 
     Initialize_Col_Loop:        
-    ;Inner loop for each column
-    Draw_Col_Loop:              
 
     ;  PUSH AX
     
     
-    ;Store AX, bx
-                                PUSH AX
-                                PUSH BX
 
     ;Set BX with the number of pixel col
                                 PUSH AX
                                 MOV  AX, DX
-                                MOV  BX, Brick_Width
-                                ADD  BX, Gap_X
-                                PUSH DX
-                                MUL  BX
-                                POP  DX
-                                MOV  BX, AX
-                                ADD  BX, 3
-                                POP  AX
-                                PUSH AX
-                                MOV  AX, BX
                                 MOV  BX, Brick_Width
                                 ADD  BX, Gap_X
                                 PUSH DX
@@ -333,15 +280,6 @@ Draw_Bricks PROC
                                 ADD  AX, BX
                                 MOV  DI, AX
                                 MOV  AL, Brick_Color
-                                PUSH BX
-                                MOV  BX, 320
-                                PUSH DX
-                                MUL  BX
-                                POP  DX
-                                POP  BX
-                                ADD  AX, BX
-                                MOV  DI, AX
-                                MOV  AL, Brick_Color
 
 
     ;Draw brick
@@ -353,38 +291,20 @@ Draw_Bricks PROC
                                 POP  CX
                                 POP  DX
                                 POP  SI
-    ;  PUSH BX
-    ;  PUSH AX
-                                PUSH SI
-                                PUSH DX
-                                CALL Draw_Single_Rect
-                                POP  DX
-                                POP  SI
-    ;  POP  AX
-    ;  POP  BX
 
                                 POP  BX
                                 POP  AX
    
     Skip_Brick:                 
-                                POP  BX
-                                POP  AX
 
                                 INC  BX
                                 INC  SI
-                                INC  BX
 
                                 CMP  BX, 8
                                 JNE  Draw_Col_Loop
-                                CMP  BX, 8
-                                JNE  Draw_Col_Loop
-                                POP  AX
 
                                 INC  AX
-                                INC  AX
 
-                                CMP  AX, 5
-                                JNE  Draw_Row_Loop
                                 CMP  AX, 5
                                 JNE  Draw_Row_Loop
 
@@ -396,15 +316,5 @@ Draw_Bricks PROC
 
                                 RET
                                 ENDP Draw_Bricks
-    
-    Continue:                   
-
-                                POP  DX
-                                POP  CX
-                                POP  BX
-                                POP  AX
-                                RET
-                                ENDP Draw_Bricks
 
 end Draw_Single_Rect
-
