@@ -8,6 +8,11 @@ EXTRN Ball_Y
 EXTRN Ball_Size
 EXTRN SCREEN_HEIGHT
 EXTRN SCREEN_WIDTH
+
+EXTRN PADDLE_Y  
+EXTRN PADDLE_X
+EXTRN PADDLE_HEIGHT
+EXTRN PADDLE_WIDTH
 .MODEL SMALL
 .STACK 100h
 
@@ -36,7 +41,36 @@ Move_Ball PROC
                    MOV  AX,SCREEN_WIDTH
                    CMP  Ball_Y,AX
                    JGE  Neg_Velocity_Y
+
+                   MOV  AX,Ball_X
+                   ADD  AX,Ball_Size
+                   CMP  AX ,PADDLE_X
+                   JNG  STOP
+
+                   MOV  AX,PADDLE_X
+                   ADD  AX,PADDLE_WIDTH
+                   CMP  Ball_X,AX
+                   JNL  STOP
+
+
+
+                   MOV  AX,Ball_Y
+                   ADD  AX,Ball_Size
+                   CMP  AX ,PADDLE_Y
+                   JNG  STOP
+
+                   MOV  AX,PADDLE_Y
+                   ADD  AX,PADDLE_HEIGHT
+                   CMP  Ball_Y,AX
+                   JNL  STOP
+
+
+                   NEG  Ball_Velocity_X
                    RET
+
+
+
+                   
     Neg_Velocity_X:
                    NEG  Ball_Velocity_X
                           
@@ -45,6 +79,10 @@ Move_Ball PROC
     Neg_Velocity_Y:
                    NEG  Ball_Velocity_Y
                          
+                   RET
+
+
+    STOP:          
                    RET
 Move_Ball ENDP
 Clear_Screen PROC
