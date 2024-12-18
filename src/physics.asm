@@ -135,11 +135,11 @@ Bricks_Collision PROC
 
                      MOV  CX,Ball_X
                      ADD  CX,Ball_Size
-                     CMP  CX ,AX
+                     CMP  CX ,Ax
                      JNG  No_Collision
 
                      MOV  CX, AX
-                     ADD  CX, Brick_Width
+                     ADD  CX, Brick_Height
                      CMP  Ball_X, CX
                      JNL  No_Collision
 
@@ -150,7 +150,7 @@ Bricks_Collision PROC
                      JNG  No_Collision
 
                      MOV  CX, BX
-                     ADD  CX, Brick_Height
+                     ADD  CX, Brick_Width
                      CMP  Ball_Y,CX
                      JNL  No_Collision
 
