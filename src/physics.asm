@@ -160,7 +160,27 @@ Bricks_Collision PROC
                      ADD  DX, Brick_Width
                      CMP  Ball_Y,DX
                      JNL  No_Collision
+    ;Multiply AX (y) * 320 + BX (x)
+                     PUSH BX
+                     MOV  BX, 320
+                     PUSH DX
+                     MUL  BX
+                     POP  DX
+                     POP  BX
+                     ADD  AX, BX
+                     MOV  DI, AX
+                     MOV  AL, 0
 
+
+                     PUSH SI                                    ;Draw Rect
+                     PUSH DX
+                     MOV  SI,Brick_Width
+                     MOV  DX,Brick_Height
+                     PUSH CX
+                     CALL Draw_Single_Rect
+                     POP  CX
+                     POP  DX
+                     POP  SI                                    ;After Draw single rect
 
                      NEG  Ball_Velocity_X
 
@@ -184,5 +204,38 @@ Bricks_Collision PROC
 
                      RET
                      ENDP Bricks_Collision
+Draw_Single_Rect proc
+    ;summary:
+    ;di=> pixle number
+    ;dx=> hieght
+    ;cx=> width
+    ;al=> color
+    ;  MOV AX, @DATA
+    ;  MOV DS, AX
+                     
+        
+    ;  mov ax,0A000h
+    ;  mov es,ax
+    ;  mov ah,0
+    ;  mov al,13h
+    ;  int 10h
+    ; mov dx, 10d
+    ; mov di, 650d
+    ; STORE THE VALUE OF  PADDLE_X IN AX THEN MULTIPLY IT BY 320 AND THEN ADD PADDLE_Y THEN STORE IT IN DI
+                        
+    DRAW_IN_ROW:     
+
+                     mov  bx, di
+    ;mov al,0eh
+    ;mov cx,18
+                     mov  cx, si
+                     rep  stosb
+                     mov  di, bx
+                     add  di, 320d
+                     dec  dx
+                     jnz  DRAW_IN_ROW
+                     RET
+                             
+Draw_Single_Rect endp
 
  END MOTION
