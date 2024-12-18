@@ -17,6 +17,7 @@ EXTRN PADDLE_WIDTH
 EXTRN Bricks_Positions
 EXTRN Brick_Height
 EXTRN Brick_Width
+EXTRN Bricks_States
 
 .MODEL SMALL
 .STACK 100h
@@ -29,11 +30,11 @@ Move_Ball PROC
                      MOV  AX,Ball_Velocity_X
                      ADD  Ball_X,AX
                      CMP  Ball_X,0
-                     JLE  Neg_Velocity_X                 ;up and down
+                     JLE  Neg_Velocity_X                        ;up and down
 
                      MOV  AX,SCREEN_HEIGHT
                      CMP  Ball_X,AX
-                     JGE  Neg_Velocity_X                 ; up and down
+                     JGE  Neg_Velocity_X                        ; up and down
 
 
                      MOV  AX,Ball_Velocity_Y
@@ -115,9 +116,16 @@ Bricks_Collision PROC
                      PUSH SI
 
                      XOR  SI, SI
+                     XOR  CX, CX
                      MOV  BP, OFFSET Bricks_Positions
 
     Bricks_Loop:     
+                     PUSH SI
+                     MOV  SI, CX
+                     MOV  AL,  byte ptr [Bricks_States + SI]
+                     POP  SI
+                     CMP  AL, 0
+                     JE   No_Collision
 
                      PUSH SI
                      SHL  SI,1
@@ -131,33 +139,40 @@ Bricks_Collision PROC
     ;Load Bx with Brick_Y
                      MOV  BX, [BP + SI]
                      POP  SI
+
+                     MOV  DX,Ball_X
+                     ADD  DX,Ball_Size
+                     CMP  DX ,Ax
+                     JNG  No_Collision
+
+                     MOV  DX, AX
+                     ADD  DX, Brick_Height
+                     CMP  Ball_X, DX
+                     JNL  No_Collision
+
+
+                     MOV  DX,Ball_Y
+                     ADD  DX,Ball_Size
+                     CMP  DX ,BX
+                     JNG  No_Collision
+
+                     MOV  DX, BX
+                     ADD  DX, Brick_Width
+                     CMP  Ball_Y,DX
+                     JNL  No_Collision
+
+
+                     NEG  Ball_Velocity_X
+
+                     PUSH SI
+                     MOV  SI,CX
+                     MOV  byte ptr [Bricks_States + SI], 0
+                     POP  SI
+
+    No_Collision:    
+                     INC  CX
                      ADD  SI, 2
 
-                     MOV  CX,Ball_X
-                     ADD  CX,Ball_Size
-                     CMP  CX ,Ax
-                     JNG  No_Collision
-
-                     MOV  CX, AX
-                     ADD  CX, Brick_Height
-                     CMP  Ball_X, CX
-                     JNL  No_Collision
-
-
-                     MOV  CX,Ball_Y
-                     ADD  CX,Ball_Size
-                     CMP  CX ,BX
-                     JNG  No_Collision
-
-                     MOV  CX, BX
-                     ADD  CX, Brick_Width
-                     CMP  Ball_Y,CX
-                     JNL  No_Collision
-
-
-                     NEG  Ball_Velocity_X    
-
-    No_Collision:            
                      CMP  SI, 64
                      JL   Bricks_Loop
 
