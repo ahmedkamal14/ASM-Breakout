@@ -54,6 +54,8 @@ PUBLIC Ball_Velocity_X
 PUBLIC Ball_Velocity_Y
 PUBLIC Prev_Time
 
+PUBLIC START_ONE_PLAYER
+
 .MODEL SMALL
 .STACK 100H
 .DATA
@@ -99,8 +101,8 @@ PUBLIC Prev_Time
      Gap_Y            DW  5
      Bricks_States    DB  40 DUP(1)
      Bricks_Positions DW  80 DUP(?)
-     Bricks_Rows     DW  5
-     Bricks_Cols     DW  8
+     Bricks_Rows      DW  5
+     Bricks_Cols      DW  8
 
      ; SCORE DATA AND LIVES
      SCORE            DB  'SCORE: $'
@@ -115,7 +117,7 @@ PUBLIC Prev_Time
 
 .CODE
 
-MAIN PROC
+START_ONE_PLAYER PROC
 
      ; INITIALIZE DATA SEGMENT
                       MOV  AX, @DATA
@@ -162,26 +164,27 @@ MAIN PROC
      ;Store the positions of bricks into Bricks_Positions
                       CALL Initialize_Bricks_Positions
 
-     ;Draw Scores
-                      CALL DRAW_SCORES
-
      ;Draw Bricks
                       CALL Draw_Bricks
 
      ;Draw ball
                       CALL Draw_Ball
+     ; DRAW SCORES AT THE TOP OF THE SCREEN
+                      CALL DRAW_SCORES                     ; Always redraw the scores with the updated values
 
      ; MAIN LOOP
      Check_Time_Label:
 
-                      MOV  AH,2CH
+     ; Get the current system time
+                      MOV  AH, 2CH
                       INT  21H
-                      
-                      CMP  DL,Prev_Time
-                      JE   Check_Time_label
-                      MOV  Prev_Time,DL
 
-                    
+     ; Check if the time has changed
+                      CMP  DL, Prev_Time
+                      JE   Check_Time_Label                ; Skip the rest of the loop if time hasn't changed
+                      MOV  Prev_Time, DL
+
+     ; Handle user input
                       PUSH AX
                       PUSH BX
                       PUSH CX
@@ -192,32 +195,29 @@ MAIN PROC
                       POP  BX
                       POP  AX
 
-
-                      mov  BALL_COLOR,0
+     ; Handle ball movement and collision
+                      MOV  BALL_COLOR, 0
                       CALL Draw_Black_Ball
-                      MOV  BALL_COLOR,14
+                      MOV  BALL_COLOR, 14
                       CALL Move_Ball
                       CALL Draw_Ball
 
-                      push dx
-                      push ax
+     ; Update the paddle position
+                      PUSH DX
+                      PUSH AX
                       MOV  DX, PADDLE_HEIGHT
                       MOV  AL, PADDLE_COLOR
-     ;CALL Draw_Single_Rect
-                      pop  ax
-                      pop  dx
+     ; CALL Draw_Single_Rect
+                      POP  AX
+                      POP  DX
 
-                      JMP  Check_Time_label
+                      JMP  Check_Time_Label
 
      ; RESTORE VIDEO MODE
-     ;   MOV  AH, 0
-     ;   MOV  AL, 3
-     ;   INT  10H
-
-     ; RETURN CONTROL TO OPERATING SYSTEM
-                      MOV  AH, 4CH
-                      INT  21H
+                      MOV  AH, 0
+                      MOV  AL, 3
+                      INT  10H
 
                       RET
-MAIN ENDP
-END MAIN
+START_ONE_PLAYER ENDP
+END START_ONE_PLAYER

@@ -61,6 +61,7 @@ Draw_Single_Rect proc
                                 jnz  DRAW_IN_ROW
                                 RET
 Draw_Single_Rect endp
+
 Draw_Ball PROC
     ;initialization
                                 MOV  CX,Ball_Y
@@ -305,4 +306,9 @@ Draw_Black_Ball PROC
                                 RET
                                 ENDP Draw_Black_Ball
 
+end Draw_Black_Ball
+end Draw_Bricks
+end Initialize_Bricks_Positions
 end Draw_Single_Rect
+end Draw_Ball
+end physics

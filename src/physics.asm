@@ -19,6 +19,11 @@ EXTRN Brick_Height
 EXTRN Brick_Width
 EXTRN Bricks_States
 
+; score data
+EXTRN SCORE_COUNT
+EXTRN DRAW_SCORES: FAR
+
+
 .MODEL SMALL
 .STACK 100h
 
@@ -27,65 +32,65 @@ MOTION PROC
 
 Move_Ball PROC
        
-                     MOV  AX,Ball_Velocity_X
-                     ADD  Ball_X,AX
-                     CMP  Ball_X,0
-                     JLE  Neg_Velocity_X                        ;up and down
+                     MOV   AX,Ball_Velocity_X
+                     ADD   Ball_X,AX
+                     CMP   Ball_X,10
+                     JLE   Neg_Velocity_X                        ;up and down
 
-                     MOV  AX,SCREEN_HEIGHT
-                     CMP  Ball_X,AX
-                     JGE  Neg_Velocity_X                        ; up and down
-
-
-                     MOV  AX,Ball_Velocity_Y
-                     ADD  Ball_Y,AX
+                     MOV   AX,SCREEN_HEIGHT
+                     CMP   Ball_X,AX
+                     JGE   Neg_Velocity_X                        ; up and down
 
 
-
-                     CMP  Ball_Y,0
-                     JLE  Neg_Velocity_Y
-                     MOV  AX,SCREEN_WIDTH
-                     CMP  Ball_Y,AX
-                     JGE  Neg_Velocity_Y
-
-                     CALL Bricks_Collision
-
-                     MOV  AX,Ball_X
-                     ADD  AX,Ball_Size
-                     CMP  AX ,PADDLE_X
-                     JNG  STOP
-
-                     MOV  AX,PADDLE_X
-                     ADD  AX,PADDLE_HEIGHT
-                     CMP  Ball_X,AX
-                     JNL  STOP
+                     MOV   AX,Ball_Velocity_Y
+                     ADD   Ball_Y,AX
 
 
 
-                     MOV  AX,Ball_Y
-                     ADD  AX,Ball_Size
-                     CMP  AX ,PADDLE_Y
-                     JNG  STOP
+                     CMP   Ball_Y,0
+                     JLE   Neg_Velocity_Y
+                     MOV   AX,SCREEN_WIDTH
+                     CMP   Ball_Y,AX
+                     JGE   Neg_Velocity_Y
 
-                     MOV  AX,PADDLE_Y
-                     ADD  AX,PADDLE_WIDTH
-                     CMP  Ball_Y,AX
-                     JNL  STOP
+                     CALL  Bricks_Collision
+
+                     MOV   AX,Ball_X
+                     ADD   AX,Ball_Size
+                     CMP   AX ,PADDLE_X
+                     JNG   STOP
+
+                     MOV   AX,PADDLE_X
+                     ADD   AX,PADDLE_HEIGHT
+                     CMP   Ball_X,AX
+                     JNL   STOP
 
 
-                     NEG  Ball_Velocity_X
+
+                     MOV   AX,Ball_Y
+                     ADD   AX,Ball_Size
+                     CMP   AX ,PADDLE_Y
+                     JNG   STOP
+
+                     MOV   AX,PADDLE_Y
+                     ADD   AX,PADDLE_WIDTH
+                     CMP   Ball_Y,AX
+                     JNL   STOP
+
+
+                     NEG   Ball_Velocity_X
                      RET
 
 
 
                    
     Neg_Velocity_X:  
-                     NEG  Ball_Velocity_X
+                     NEG   Ball_Velocity_X
                           
                      RET
 
     Neg_Velocity_Y:  
-                     NEG  Ball_Velocity_Y
+                     NEG   Ball_Velocity_Y
                          
                      RET
 
@@ -94,9 +99,9 @@ Move_Ball PROC
                      RET
 Move_Ball ENDP
 Clear_Screen PROC
-                     MOV  AH, 0
-                     MOV  AL, 13H
-                     INT  10H
+                     MOV   AH, 0
+                     MOV   AL, 13H
+                     INT   10H
                 
     ;  MOV  AH,0BH
                         
@@ -104,106 +109,149 @@ Clear_Screen PROC
     ;  MOV  BL,00
     ;  INT  10H
                      RET
-                     ENDP Clear_Screen
+                     ENDP  Clear_Screen
 
 MOTION ENDP
 Bricks_Collision PROC
                   
-                     PUSH AX
-                     PUSH BX
-                     PUSH CX
-                     PUSH DX
-                     PUSH SI
+                     PUSH  AX
+                     PUSH  BX
+                     PUSH  CX
+                     PUSH  DX
+                     PUSH  SI
 
-                     XOR  SI, SI
-                     XOR  CX, CX
-                     MOV  BP, OFFSET Bricks_Positions
+                     XOR   SI, SI
+                     XOR   CX, CX
+                     MOV   BP, OFFSET Bricks_Positions
 
     Bricks_Loop:     
-                     PUSH SI
-                     MOV  SI, CX
-                     MOV  AL,  byte ptr [Bricks_States + SI]
-                     POP  SI
-                     CMP  AL, 0
-                     JE   No_Collision
+                     PUSH  SI
+                     MOV   SI, CX
+                     MOV   AL,  byte ptr [Bricks_States + SI]
+                     POP   SI
+                     CMP   AL, 0
+                     JNE   D1
+                     JMP   No_Collision
+    D1:              
 
-                     PUSH SI
-                     SHL  SI,1
+                     PUSH  SI
+                     SHL   SI,1
 
     ;Load AX with Brick_X
-                     MOV  AX, [BP + SI]
-                     POP  SI
-                     PUSH SI
-                     INC  SI
-                     SHL  SI,1
+                     MOV   AX, [BP + SI]
+                     POP   SI
+                     PUSH  SI
+                     INC   SI
+                     SHL   SI,1
     ;Load Bx with Brick_Y
-                     MOV  BX, [BP + SI]
-                     POP  SI
+                     MOV   BX, [BP + SI]
+                     POP   SI
 
-                     MOV  DX,Ball_X
-                     ADD  DX,Ball_Size
-                     CMP  DX ,Ax
-                     JNG  No_Collision
+                     MOV   DX,Ball_X
+                     ADD   DX,Ball_Size
+                     CMP   DX ,Ax
+                     JGE   D2
+                     JMP   No_Collision
 
-                     MOV  DX, AX
-                     ADD  DX, Brick_Height
-                     CMP  Ball_X, DX
-                     JNL  No_Collision
+    D2:              
+
+                     MOV   DX, AX
+                     ADD   DX, Brick_Height
+                     CMP   Ball_X, DX
+                     JNL   No_Collision
 
 
-                     MOV  DX,Ball_Y
-                     ADD  DX,Ball_Size
-                     CMP  DX ,BX
-                     JNG  No_Collision
+                     MOV   DX,Ball_Y
+                     ADD   DX,Ball_Size
+                     CMP   DX ,BX
+                     JNG   No_Collision
 
-                     MOV  DX, BX
-                     ADD  DX, Brick_Width
-                     CMP  Ball_Y,DX
-                     JNL  No_Collision
+                     MOV   DX, BX
+                     ADD   DX, Brick_Width
+                     CMP   Ball_Y,DX
+                     JNL   No_Collision
     ;Multiply AX (y) * 320 + BX (x)
-                     PUSH BX
-                     MOV  BX, 320
-                     PUSH DX
-                     MUL  BX
-                     POP  DX
-                     POP  BX
-                     ADD  AX, BX
-                     MOV  DI, AX
-                     MOV  AL, 0
+                     PUSH  BX
+                     MOV   BX, 320
+                     PUSH  DX
+                     MUL   BX
+                     POP   DX
+                     POP   BX
+                     ADD   AX, BX
+                     MOV   DI, AX
+                     MOV   AL, 0
 
 
-                     PUSH SI                                    ;Draw Rect
-                     PUSH DX
-                     MOV  SI,Brick_Width
-                     MOV  DX,Brick_Height
-                     PUSH CX
-                     CALL Draw_Single_Rect
-                     POP  CX
-                     POP  DX
-                     POP  SI                                    ;After Draw single rect
+                     PUSH  SI                                    ;Draw Rect
+                     PUSH  DX
+                     MOV   SI,Brick_Width
+                     MOV   DX,Brick_Height
+                     PUSH  CX
+                     CALL  Draw_Single_Rect
+                     POP   CX
+                     POP   DX
+                     POP   SI                                    ;After Draw single rect
 
-                     NEG  Ball_Velocity_X
+                     NEG   Ball_Velocity_X
+                     INC   SCORE_COUNT
 
-                     PUSH SI
-                     MOV  SI,CX
-                     MOV  byte ptr [Bricks_States + SI], 0
-                     POP  SI
+
+                     PUSHF
+                     PUSH  AX
+                     PUSH  BX
+                     PUSH  CX
+                     PUSH  DX
+
+    ; CLEAR THE FIRST 5 ROWS
+    
+
+                     MOV   Di, 0
+                     mov   si, 320
+                     MOV   AL, 000
+                     MOV   DX,10
+
+                     PUSH  AX
+                     PUSH  BX
+                     PUSH  CX
+                     PUSH  DX
+                        
+    
+                     CALL  Draw_Single_Rect
+                     POP   DX
+                     POP   CX
+                     POP   BX
+                     POP   AX
+                        
+
+                     POP   DX
+                     POP   CX
+                     POP   BX
+                     POP   AX
+                     POPF
+
+                     PUSH  SI
+                     MOV   SI,CX
+                     MOV   byte ptr [Bricks_States + SI], 0
+                     POP   SI
 
     No_Collision:    
-                     INC  CX
-                     ADD  SI, 2
+                     INC   CX
+                     ADD   SI, 2
 
-                     CMP  SI, 64
-                     JL   Bricks_Loop
+                     CMP   SI, 64
+                     JGE   DUMMY
+                     JMP   Bricks_Loop
 
-                     POP  SI
-                     POP  DX
-                     POP  CX
-                     POP  BX
-                     POP  AX
+    DUMMY:           
+
+                     POP   SI
+                     POP   DX
+                     POP   CX
+                     POP   BX
+                     POP   AX
 
                      RET
-                     ENDP Bricks_Collision
+                     ENDP  Bricks_Collision
 Draw_Single_Rect proc
     ;summary:
     ;di=> pixle number
@@ -225,15 +273,15 @@ Draw_Single_Rect proc
                         
     DRAW_IN_ROW:     
 
-                     mov  bx, di
+                     mov   bx, di
     ;mov al,0eh
     ;mov cx,18
-                     mov  cx, si
-                     rep  stosb
-                     mov  di, bx
-                     add  di, 320d
-                     dec  dx
-                     jnz  DRAW_IN_ROW
+                     mov   cx, si
+                     rep   stosb
+                     mov   di, bx
+                     add   di, 320d
+                     dec   dx
+                     jnz   DRAW_IN_ROW
                      RET
                              
 Draw_Single_Rect endp
