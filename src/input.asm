@@ -25,14 +25,10 @@ EXTRN SCREEN_SIZE
 
 INPUT_MAIN_LOOP PROC
 
-            
     ; CHECK IF A KEY IS PRESSED
                           MOV  AH, 01H
                           INT  16H
-                          JNZ  D5
-                          JMP  INPUT_EXIT
-
-    D5:                   
+                          JZ   INPUT_EXIT
 
     ; FETCH THE KEY DETAILS
                           MOV  AH, 00H
@@ -50,7 +46,7 @@ INPUT_MAIN_LOOP PROC
                           CMP  AL, 1BH
                           JE   INPUT_EXIT
     ;   JMP  INPUT_MAIN_LOOP
-                          RET
+                          ret
 
     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
     INPUT_MOVE_LEFT:      
@@ -61,13 +57,6 @@ INPUT_MAIN_LOOP PROC
                           MOV  [PADDLE_Y], AX
     INPUT_MOVE_LEFT_DONE: 
                           CALL INPUT_CLEAR_SCREEN
-
-                          PUSH AX
-                          PUSH BX
-                          PUSH CX
-                          PUSH DX
-                          PUSH SI
-                          PUSH DI
 
                           MOV  AX, PADDLE_X
                           MOV  DX, 320
@@ -80,16 +69,7 @@ INPUT_MAIN_LOOP PROC
 
                           MOV  AL, PADDLE_COLOR
 
-    ;   CALL Draw_Single_Rect
-
-
-                          POP  DI
-                          POP  SI
-                          POP  DX
-                          POP  CX
-                          POP  BX
-                          POP  AX
-
+                          CALL Draw_Single_Rect
                           RET
     ;   JMP  INPUT_MAIN_LOOP
 
@@ -103,13 +83,6 @@ INPUT_MAIN_LOOP PROC
     INPUT_MOVE_RIGHT_DONE:
                           CALL INPUT_CLEAR_SCREEN
 
-                          PUSH AX
-                          PUSH BX
-                          PUSH CX
-                          PUSH DX
-                          PUSH SI
-                          PUSH DI
-
                           MOV  AX, PADDLE_X
                           MOV  DX, 320
                           MUL  DX
@@ -121,15 +94,7 @@ INPUT_MAIN_LOOP PROC
 
                           MOV  AL, PADDLE_COLOR
                           
-    ;   CALL Draw_Single_Rect
-
-                          POP  DI
-                          POP  SI
-                          POP  DX
-                          POP  CX
-                          POP  BX
-                          POP  AX
-                            
+                          CALL Draw_Single_Rect
     ;   JMP  INPUT_MAIN_LOOP
     
     INPUT_EXIT:           

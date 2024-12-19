@@ -169,8 +169,9 @@ START_ONE_PLAYER PROC
 
      ;Draw ball
                       CALL Draw_Ball
-     ; DRAW SCORES AT THE TOP OF THE SCREEN
-                      CALL DRAW_SCORES                     ; Always redraw the scores with the updated values
+
+     ;Draw Scores
+                      CALL DRAW_SCORES
 
      ; MAIN LOOP
      Check_Time_Label:
@@ -213,10 +214,15 @@ START_ONE_PLAYER PROC
 
                       JMP  Check_Time_Label
 
+
      ; RESTORE VIDEO MODE
-                      MOV  AH, 0
-                      MOV  AL, 3
-                      INT  10H
+     ;   MOV  AH, 0
+     ;   MOV  AL, 3
+     ;   INT  10H
+
+     ; RETURN CONTROL TO OPERATING SYSTEM
+                      MOV  AH, 4CH
+                      INT  21H
 
                       RET
 START_ONE_PLAYER ENDP

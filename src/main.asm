@@ -114,7 +114,6 @@ main proc
 
     ; Switch to two player mode
     two_player_mode:
-
                     JMP  Options_page
 
     ; Exit the program

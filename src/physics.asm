@@ -223,6 +223,8 @@ Bricks_Collision PROC
                      POP   AX
                         
 
+    ;  CALL  DRAW_SCORES
+
                      POP   DX
                      POP   CX
                      POP   BX
