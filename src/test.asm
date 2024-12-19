@@ -39,6 +39,8 @@ PUBLIC Gap_X
 PUBLIC Gap_Y
 PUBLIC Bricks_States
 PUBLIC Bricks_Positions
+PUBLIC Bricks_Rows
+PUBLIC Bricks_Cols
 
  ; SCORE DATA AND LIVES
 PUBLIC SCORE
@@ -97,6 +99,8 @@ PUBLIC Prev_Time
      Gap_Y            DW  5
      Bricks_States    DB  40 DUP(1)
      Bricks_Positions DW  80 DUP(?)
+     Bricks_Rows     DW  5
+     Bricks_Cols     DW  8
 
      ; SCORE DATA AND LIVES
      SCORE            DB  'SCORE: $'
