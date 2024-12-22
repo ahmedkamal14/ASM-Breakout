@@ -22,6 +22,7 @@
     BORDER_RIGHT        DW  ?                                                         ; SCREEN_WIDTH - PADDLE_WIDTH
     BORDER_TOP          DW  0
     BORDER_BOTTOM       DW  SCREEN_HEIGHT - PADDLE_HEIGHT
+    BORDER_MIDDLE       EQU 161
 
     ; NEEDED COLORS
     BLACK               DB  0
@@ -85,7 +86,16 @@
     ; SCORE STRING
     SCORE_STRING        DB  '-$'
 
-    ; CONDITION VAR FOR BRICK STATE
+    ; Two Player Mode
+    PADDLE_X1           DW  180
+    PADDLE_Y1           DW  60
+
+    PADDLE_X2           DW  180
+    PADDLE_Y2           DW  225
+
+    PADDLE_COLOR1       DB  8
+    PADDLE_COLOR2       DB  8
+
 
 .CODE
 
@@ -197,6 +207,7 @@ MAIN proc
 
     ; Switch to two player mode
     two_player_mode:            
+                                CALL  START_TWO_PLAYER
                                 JMP   Options_page
 
     ; Exit the program
@@ -571,6 +582,441 @@ START_ONE_PLAYER PROC
     ; INT   21H
                                 CALL  MAIN
 START_ONE_PLAYER ENDP
+
+START_TWO_PLAYER PROC
+
+    ; INITIALIZE DATA SEGMENT
+                                MOV   AX, @DATA
+                                MOV   DS, AX
+
+    ; CALC SCREEN SIZE AND STORE IT
+                                MOV   AX, SCREEN_WIDTH
+                                MUL   SCREEN_HEIGHT
+                                MOV   SCREEN_SIZE, AX
+
+    ; CALC BORDER RIGHT AND STORE IT
+                                MOV   AX, SCREEN_WIDTH
+                                SUB   AX, PADDLE_WIDTH
+                                MOV   BORDER_RIGHT, AX
+
+
+    ; INITIALIZE VIDEO MODE
+                                MOV   AX, 0A000H
+                                MOV   ES, AX
+                                MOV   AH, 0
+                                MOV   AL, 13H
+                                INT   10H
+
+    ; DRAW VERTICAL LINE AT THE CENTER OF THE SCREEN
+                                mov   di, 161                                 ; Starting position in video memory (DI = 159)
+                                mov   dx, di                                  ; Save the initial position in DX
+                                mov   cx, 200                                 ; Length of the vertical line
+                                mov   al, 0FH                                 ; Pixel color (e.g., 2)
+    
+    vert:                       
+                                stosb                                         ; Write AL (color) to memory at DI
+                                mov   di, dx                                  ; Restore DI to the starting position
+                                add   di, 320                                 ; Move to the next row (320 bytes down)
+                                mov   dx, di                                  ; Save new starting position for the next iteration
+                                dec   cx                                      ; Decrement the line counter
+                                jnz   vert                                    ; Repeat until CX = 0
+
+    ; ----------------------------------------------------------------------------------------------
+
+                                MOV   Bricks_Rows, 3
+                                MOV   Bricks_Cols, 8
+                                MOV   Brick_Height, 8
+                                MOV   Brick_Width, 30
+                                MOV   Gap_X, 11
+                                MOV   Gap_Y, 5
+                                MOV   Brick_Color, 10
+                                MOV   SCORE_COUNT, 0
+
+    ; loop on the bricks states and set them to 1
+                                MOV   SI, 0
+                                MOV   CX, 40
+    SETST:                      
+                                MOV   byte ptr [Bricks_States + SI], 1
+                                INC   SI
+                                LOOP  SETST
+
+
+                                CALL  Initialize_Bricks_Positions
+
+    ;Draw Bricks
+                                CALL  Draw_Bricks
+
+
+    ; DRAW PADDLE 1
+                                MOV   AX, PADDLE_X1
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, PADDLE_Y1
+                                MOV   DI, AX
+
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, PADDLE_WIDTH
+                                MOV   AL, PADDLE_COLOR1
+                                CALL  Draw_Single_Rect
+
+    ; DRAW PADDLE 2
+                                MOV   AX, PADDLE_X2
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, PADDLE_Y2
+                                MOV   DI, AX
+
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, PADDLE_WIDTH
+                                MOV   AL, PADDLE_COLOR2
+                                CALL  Draw_Single_Rect
+
+    INPUT_TEST:                 
+                                CALL  INPUT_TWO_PLAYER
+
+
+                                JMP   INPUT_TEST
+
+
+
+                                MOV   AH, 00H
+                                INT   16H
+
+                                RET
+START_TWO_PLAYER ENDP
+
+INPUT_TWO_PLAYER PROC
+    ; CHECK IF A KEY IS PRESSED
+                                MOV   AH, 01H
+                                INT   16H
+                                JNZ   DUMMY5
+                                JMP   TWO_PLAYER_EXIT
+    DUMMY5:                     
+
+    ; FETCH THE KEY DETAILS
+                                MOV   AH, 00H
+                                INT   16H
+
+    ; HANDLE LEFT ARROW KEY
+                                CMP   AH, 4BH
+                                JE    PLAYER_1_MOVE_LEFTT
+
+    ; HANDLE RIGHT ARROW KEY
+                                CMP   AH, 4DH
+                                JE    PLAYER_1_MOVE_RIGHTT
+
+    ; HANDLE UP ARROW KEY
+                                CMP   AL, 31H
+                                JE    PLAYER_2_MOVE_LEFTT
+
+    ; HANDLE DOWN ARROW KEY
+                                CMP   AL, 33H
+                                JNE   DUMMY6
+                                JMP   PLAYER_2_MOVE_RIGHTT
+    DUMMY6:                     
+
+    ; HANDLE ESC KEY
+                                CMP   AL, 1BH
+                                JE    DUMMY7
+                                JMP   TWO_PLAYER_EXIT
+    DUMMY7:                     
+                                INC   ESCSTATUS
+    ;   JMP  INPUT_MAIN_LOOP
+                                RET
+
+    ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
+    PLAYER_1_MOVE_LEFTT:        
+                                MOV   AX, PADDLE_Y1
+                                SUB   AX, PADDLE_SPEED
+                                CMP   AX, BORDER_LEFT
+                                JL    PLAYER_1_MOVE_LEFTT_DONE
+                                MOV   [PADDLE_Y1], AX
+    PLAYER_1_MOVE_LEFTT_DONE:   
+                                CALL  PLAYER_1_CLEAR_PADDLE
+
+                                MOV   AX, PADDLE_X1
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, PADDLE_Y1
+                                MOV   DI, AX
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, PADDLE_WIDTH
+
+                                MOV   AL, PADDLE_COLOR1
+
+                                CALL  Draw_Single_Rect
+                                RET
+    ;   JMP  INPUT_MAIN_LOOP
+
+    ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
+    PLAYER_1_MOVE_RIGHTT:       
+                                MOV   AX, PADDLE_Y1
+                                ADD   AX, PADDLE_SPEED
+                                CMP   AX, BORDER_MIDDLE - 41
+                                JG    PLAYER_1_MOVE_RIGHTT_DONE
+                                MOV   [PADDLE_Y1], AX
+    PLAYER_1_MOVE_RIGHTT_DONE:  
+                                CALL  PLAYER_1_CLEAR_PADDLE
+
+                                MOV   AX, PADDLE_X1
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, PADDLE_Y1
+                                MOV   DI, AX
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, PADDLE_WIDTH
+
+                                MOV   AL, PADDLE_COLOR1
+                          
+                                CALL  Draw_Single_Rect
+                                RET
+    
+
+    ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
+    PLAYER_2_MOVE_LEFTT:        
+                                MOV   AX, PADDLE_Y2
+                                SUB   AX, PADDLE_SPEED
+                                CMP   AX, BORDER_MIDDLE - 1
+                                JL    PLAYER_2_MOVE_LEFTT_DONE
+                                MOV   [PADDLE_Y2], AX
+    PLAYER_2_MOVE_LEFTT_DONE:   
+                                CALL  PLAYER_2_CLEAR_PADDLE
+
+                                MOV   AX, PADDLE_X2
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, PADDLE_Y2
+                                MOV   DI, AX
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, PADDLE_WIDTH
+
+                                MOV   AL, PADDLE_COLOR2
+
+                                CALL  Draw_Single_Rect
+                                RET
+    ;   JMP  INPUT_MAIN_LOOP
+
+    ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
+    PLAYER_2_MOVE_RIGHTT:       
+                                MOV   AX, PADDLE_Y2
+                                ADD   AX, PADDLE_SPEED
+                                CMP   AX, BORDER_RIGHT
+                                JG    PLAYER_2_MOVE_RIGHTT_DONE
+                                MOV   [PADDLE_Y2], AX
+    PLAYER_2_MOVE_RIGHTT_DONE:  
+                                CALL  PLAYER_2_CLEAR_PADDLE
+
+                                MOV   AX, PADDLE_X2
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, PADDLE_Y2
+                                MOV   DI, AX
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, PADDLE_WIDTH
+
+                                MOV   AL, PADDLE_COLOR2
+                          
+                                CALL  Draw_Single_Rect
+
+    TWO_PLAYER_EXIT:            
+                                RET
+INPUT_TWO_PLAYER ENDP
+
+    ; INPUT_PLAYER_1 PROC
+
+    ;     ; CHECK IF A KEY IS PRESSED
+    ;                                 MOV   AH, 01H
+    ;                                 INT   16H
+    ;                                 JZ    PLAYER_1_EXIT
+
+    ;     ; FETCH THE KEY DETAILS
+    ;                                 MOV   AH, 00H
+    ;                                 INT   16H
+
+    ;     ; HANDLE LEFT ARROW KEY
+    ;                                 CMP   AH, 4BH
+    ;                                 JE    PLAYER_1_MOVE_LEFT
+
+    ;     ; HANDLE RIGHT ARROW KEY
+    ;                                 CMP   AH, 4DH
+    ;                                 JE    PLAYER_1_MOVE_RIGHT
+
+    ;     ; HANDLE ESC KEY
+    ;                                 CMP   AL, 1BH
+    ;                                 JNE   PLAYER_1_EXIT
+    ;                                 INC   ESCSTATUS
+    ;     ;   JMP  INPUT_MAIN_LOOP
+    ;                                 ret
+
+    ;     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
+    ;     PLAYER_1_MOVE_LEFT:
+    ;                                 MOV   AX, PADDLE_Y1
+    ;                                 SUB   AX, PADDLE_SPEED
+    ;                                 CMP   AX, BORDER_LEFT
+    ;                                 JL    PLAYER_1_MOVE_LEFT_DONE
+    ;                                 MOV   [PADDLE_Y1], AX
+    ;     PLAYER_1_MOVE_LEFT_DONE:
+    ;                                 CALL  PLAYER_1_CLEAR_PADDLE
+
+    ;                                 MOV   AX, PADDLE_X1
+    ;                                 MOV   DX, 320
+    ;                                 MUL   DX
+    ;                                 ADD   AX, PADDLE_Y1
+    ;                                 MOV   DI, AX
+
+    ;                                 MOV   DX, PADDLE_HEIGHT
+    ;                                 mov   si, PADDLE_WIDTH
+
+    ;                                 MOV   AL, PADDLE_COLOR1
+
+    ;                                 CALL  Draw_Single_Rect
+    ;                                 RET
+    ;     ;   JMP  INPUT_MAIN_LOOP
+
+    ;     ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
+    ;     PLAYER_1_MOVE_RIGHT:
+    ;                                 MOV   AX, PADDLE_Y1
+    ;                                 ADD   AX, PADDLE_SPEED
+    ;                                 CMP   AX, BORDER_MIDDLE
+    ;                                 JG    PLAYER_1_MOVE_RIGHT_DONE
+    ;                                 MOV   [PADDLE_Y1], AX
+    ;     PLAYER_1_MOVE_RIGHT_DONE:
+    ;                                 CALL  PLAYER_1_CLEAR_PADDLE
+
+    ;                                 MOV   AX, PADDLE_X1
+    ;                                 MOV   DX, 320
+    ;                                 MUL   DX
+    ;                                 ADD   AX, PADDLE_Y1
+    ;                                 MOV   DI, AX
+
+    ;                                 MOV   DX, PADDLE_HEIGHT
+    ;                                 mov   si, PADDLE_WIDTH
+
+    ;                                 MOV   AL, PADDLE_COLOR1
+                          
+    ;                                 CALL  Draw_Single_Rect
+    ;     ;   JMP  INPUT_MAIN_LOOP
+
+    ;     PLAYER_1_EXIT:
+    ;                                 RET
+    ; INPUT_PLAYER_1 ENDP
+
+PLAYER_1_CLEAR_PADDLE PROC
+                                MOV   AX, PADDLE_X1
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, 0
+                                MOV   DI, AX
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, 160
+
+                                MOV   AL, 0
+                          
+                                CALL  Draw_Single_Rect
+                                RET
+PLAYER_1_CLEAR_PADDLE ENDP
+
+    ; INPUT_PLAYER_2 PROC
+
+    ;     ; CHECK IF A KEY IS PRESSED
+    ;                                 MOV   AH, 01H
+    ;                                 INT   16H
+    ;                                 JZ    PLAYER_2_EXIT
+
+    ;     ; FETCH THE KEY DETAILS
+    ;                                 MOV   AH, 00H
+    ;                                 INT   16H
+
+    ;     ; HANDLE UP ARROW KEY
+    ;                                 CMP   AH, 61H
+    ;                                 JE    PLAYER_2_MOVE_LEFT
+
+    ;     ; HANDLE RIGHT ARROW KEY
+    ;                                 CMP   AH, 64H
+    ;                                 JE    PLAYER_2_MOVE_RIGHT
+
+    ;     ; HANDLE ESC KEY
+    ;                                 CMP   AL, 1BH
+    ;                                 JNE   PLAYER_2_EXIT
+    ;                                 INC   ESCSTATUS
+    ;     ;   JMP  INPUT_MAIN_LOOP
+    ;                                 RET
+
+    ;     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
+    ;     PLAYER_2_MOVE_LEFT:
+    ;                                 MOV   AX, PADDLE_Y2
+    ;                                 SUB   AX, PADDLE_SPEED
+    ;                                 CMP   AX, BORDER_MIDDLE
+    ;                                 JL    PLAYER_2_MOVE_LEFT_DONE
+    ;                                 MOV   [PADDLE_Y1], AX
+    ;     PLAYER_2_MOVE_LEFT_DONE:
+    ;                                 CALL  PLAYER_2_CLEAR_PADDLE
+
+    ;                                 MOV   AX, PADDLE_X2
+    ;                                 MOV   DX, 320
+    ;                                 MUL   DX
+    ;                                 ADD   AX, PADDLE_Y2
+    ;                                 MOV   DI, AX
+
+    ;                                 MOV   DX, PADDLE_HEIGHT
+    ;                                 mov   si, PADDLE_WIDTH
+
+    ;                                 MOV   AL, PADDLE_COLOR2
+
+    ;                                 CALL  Draw_Single_Rect
+    ;                                 RET
+    ;     ;   JMP  INPUT_MAIN_LOOP
+
+    ;     ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
+    ;     PLAYER_2_MOVE_RIGHT:
+    ;                                 MOV   AX, PADDLE_Y2
+    ;                                 ADD   AX, PADDLE_SPEED
+    ;                                 CMP   AX, BORDER_RIGHT
+    ;                                 JG    PLAYER_2_MOVE_RIGHT_DONE
+    ;                                 MOV   [PADDLE_Y1], AX
+    ;     PLAYER_2_MOVE_RIGHT_DONE:
+    ;                                 CALL  PLAYER_2_CLEAR_PADDLE
+
+    ;                                 MOV   AX, PADDLE_X2
+    ;                                 MOV   DX, 320
+    ;                                 MUL   DX
+    ;                                 ADD   AX, PADDLE_Y2
+    ;                                 MOV   DI, AX
+
+    ;                                 MOV   DX, PADDLE_HEIGHT
+    ;                                 mov   si, PADDLE_WIDTH
+
+    ;                                 MOV   AL, PADDLE_COLOR2
+                          
+    ;                                 CALL  Draw_Single_Rect
+    ;     ;   JMP  INPUT_MAIN_LOOP
+
+    ;     PLAYER_2_EXIT:
+    ;                                 RET
+    ; INPUT_PLAYER_2 ENDP
+
+PLAYER_2_CLEAR_PADDLE PROC
+                                MOV   AX, PADDLE_X2
+                                MOV   DX, 320
+                                MUL   DX
+                                ADD   AX, 163
+                                MOV   DI, AX
+
+                                MOV   DX, PADDLE_HEIGHT
+                                mov   si, 156
+
+                                MOV   AL, 0
+                          
+                                CALL  Draw_Single_Rect
+                                RET
+PLAYER_2_CLEAR_PADDLE ENDP
 
     ; INPUT PROCs----------------------------------------------------------------------------------------------------
 INPUT_MAIN_LOOP PROC
@@ -1128,6 +1574,7 @@ Bricks_Collision PROC
     ;Load Bx with Brick_Y
                                 MOV   BX, [BP + SI]
                                 POP   SI
+
 
                                 MOV   DX,Ball_X
                                 ADD   DX,Ball_Size
