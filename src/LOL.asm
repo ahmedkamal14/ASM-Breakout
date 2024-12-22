@@ -463,6 +463,8 @@ START_ONE_PLAYER PROC
                                 MOV   AH, 0
                                 MOV   AL, 13H
                                 INT   10H
+    ;DRAW SCORE CONTAINER
+                                CALL  Draw_Score_Container
 
     ; DRAW PADDLE
                                 MOV   AX, PADDLE_X
@@ -661,6 +663,64 @@ INPUT_CLEAR_SCREEN PROC
                                 RET
 INPUT_CLEAR_SCREEN ENDP
 
+    ;DRAW SCORE CONTAINER------------------------------------------------------------------------------------------------------
+
+Draw_Score_Container PROC
+                                mov   al, 2
+                                mov   di, 325
+                                mov   cx, 26d
+                                rep   stosb
+
+                                mov   al, 2
+                                mov   di, 1925
+                                mov   cx, 26d
+                                rep   stosb
+
+                                mov   di, 325                                 ; Starting position in video memory (DI = 325)
+                                mov   dx, di                                  ; Save the initial position in DX
+                                mov   cx, 5                                   ; Length of the vertical line
+                                mov   al, 2                                   ; Pixel color (e.g., 2)
+
+    verLine:                    
+                                stosb                                         ; Write AL (color) to memory at DI
+                                mov   di, dx                                  ; Restore DI to the starting position
+                                add   di, 320                                 ; Move to the next row (320 bytes down)
+                                mov   dx, di                                  ; Save new starting position for the next iteration
+                                dec   cx                                      ; Decrement the line counter
+                                jnz   verLine                                 ; Repeat until CX = 0
+
+                                mov   di, 351                                 ; Starting position in video memory (DI = 325)
+                                mov   dx, di                                  ; Save the initial position in DX
+                                mov   cx, 5                                   ; Length of the vertical line
+                                mov   al, 2                                   ; Pixel color (e.g., 2)
+
+    verLine2:                   
+                                stosb                                         ; Write AL (color) to memory at DI
+                                mov   di, dx                                  ; Restore DI to the starting position
+                                add   di, 320                                 ; Move to the next row (320 bytes down)
+                                mov   dx, di                                  ; Save new starting position for the next iteration
+                                dec   cx                                      ; Decrement the line counter
+                                jnz   verLine2
+                                ret
+Draw_Score_Container ENDP
+
+    ;DRAWSCORE PROGRESS-----------------------------------------------------------------------------------------------------
+Draw_Score PROC
+                                mov   al, 0Dh
+                                mov   di, 645
+                                add   di, SCORE_COUNT
+                                mov   cx, 4
+                                mov   dx, di
+    verLine3:                   
+                                stosb                                         ; Write AL (color) to memory at DI
+                                mov   di, dx                                  ; Restore DI to the starting position
+                                add   di, 320                                 ; Move to the next row (320 bytes down)
+                                mov   dx, di                                  ; Save new starting position for the next iteration
+                                dec   cx                                      ; Decrement the line counter
+                                jnz   verLine3
+                                ret
+
+Draw_Score ENDP
 
     ;GRAPHICS FUNCTIONS-----------------------------------------------------------------------------------------------------
 Draw_Single_Rect proc
@@ -1139,7 +1199,7 @@ Bricks_Collision PROC
     
     ; CALL  Draw_Single_Rect
 
-                                CALL  DRAW_SCORES
+                                CALL  Draw_Score
 
                                 POP   DX
                                 POP   CX
@@ -1147,7 +1207,7 @@ Bricks_Collision PROC
                                 POP   AX
                         
 
-    ;  CALL  DRAW_SCORES
+    ;  CALL  DRAW_SCORE
 
                                 POP   DX
                                 POP   CX
