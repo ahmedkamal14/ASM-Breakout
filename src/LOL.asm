@@ -1544,17 +1544,15 @@ Move_Ball PROC
                                      MOV   AX,Ball_Velocity_X
                                      ADD   Ball_X,AX
                                      CMP   Ball_X,10
-                                     JLE   Neg_Velocity_X                          ;up and down
-
+                                     JG    CONTINUE
+                                     JMP   FAR PTR  Neg_Velocity_X                 ;up and down
+    CONTINUE:                        
                                      MOV   AX,SCREEN_HEIGHT
                                      CMP   Ball_X,AX
                                      JGE   Neg_Velocity_X                          ; up and down
 
-
                                      MOV   AX,Ball_Velocity_Y
                                      ADD   Ball_Y,AX
-
-
 
                                      CMP   Ball_Y,0
                                      JLE   Neg_Velocity_Y
@@ -1572,11 +1570,9 @@ Move_Ball PROC
 
                                      MOV   AX,PADDLE_X
                                      ADD   AX,PADDLE_HEIGHT
-                                     ADD   AX,2
+                                     ADD   AX,4
                                      CMP   Ball_X,AX
                                      JNL   STOP
-
-
 
                                      MOV   AX,Ball_Y
                                      ADD   AX,Ball_Size
@@ -1590,12 +1586,17 @@ Move_Ball PROC
                                      CMP   Ball_Y,AX
                                      JNL   STOP
 
+                                     MOV   AX,Ball_Y
+                                     ADD   AX,Ball_Size
+                                     SUB   AX,2
+                                     CMP   AX ,PADDLE_Y
+                                     JLE   Neg_Velocity_Y
 
-                                     NEG   Ball_Velocity_X
-                                     RET
-
-
-
+                                     MOV   AX,PADDLE_Y
+                                     ADD   AX,PADDLE_WIDTH
+                                     SUB   AX,2
+                                     CMP   Ball_Y,AX
+                                     JGE   Neg_Velocity_Y
                    
     Neg_Velocity_X:                  
                                      NEG   Ball_Velocity_X
@@ -1623,8 +1624,9 @@ Move_Ball_Two_Player_Left PROC
                                      MOV   AX,Ball_Velocity_X1
                                      ADD   Ball_X_Right,AX
                                      CMP   Ball_X_Right,10                         ; Instead of zero to maintain score visual appearance
-                                     JLE   Neg_Velocity_X_Two_Player               ;up and down
-
+                                     JG    CONTINUE_FAR_LEFT
+                                     JMP   Neg_Velocity_X_Two_Player               ;up and down
+    CONTINUE_FAR_LEFT:               
                                      MOV   AX,SCREEN_HEIGHT                        ;End of screen,,not necessary???
                                      CMP   Ball_X_Right,AX
                                      JGE   Neg_Velocity_X_Two_Player               ; up and down
@@ -1670,9 +1672,20 @@ Move_Ball_Two_Player_Left PROC
                                      CMP   Ball_Y_Right,AX
                                      JNL   STOP_Two_Player
 
+                                     MOV   AX,Ball_Y_RIGHT
+                                     ADD   AX,Ball_Size
+                                     SUB   AX,2
+                                     CMP   AX ,PADDLE_Y1
+                                     JLE   Neg_Velocity_Y_Two_Player
 
-                                     NEG   Ball_Velocity_X1
-                                     RET
+                                     MOV   AX,PADDLE_Y1
+                                     ADD   AX,PADDLE_WIDTH
+                                     SUB   AX,2
+                                     CMP   Ball_Y_RIGHT,AX
+                                     JGE   Neg_Velocity_Y_Two_Player
+
+
+                                   
     Neg_Velocity_X_Two_Player:       
                                      NEG   Ball_Velocity_X1
                                      RET
@@ -1696,8 +1709,9 @@ Move_Ball_Two_Player_Right PROC
                                      MOV   AX,Ball_Velocity_X2
                                      ADD   Ball_X_Left,AX
                                      CMP   Ball_X_Left,10                          ; Instead of zero to maintain score visual appearance
-                                     JLE   Neg_Velocity_X_Two_Player2              ;up and down
-
+                                     JG    CONTINUE_FAR_RIGHT
+                                     JMP   Neg_Velocity_X_Two_Player2              ;up and down
+    CONTINUE_FAR_RIGHT:              
                                      MOV   AX,SCREEN_HEIGHT                        ;End of screen,,not necessary???
                                      CMP   Ball_X_Left,AX
                                      JGE   Neg_Velocity_X_Two_Player2              ; up and down
@@ -1743,9 +1757,18 @@ Move_Ball_Two_Player_Right PROC
                                      CMP   Ball_Y_Left,AX
                                      JNL   STOP_Two_Player2
 
+                                     MOV   AX,Ball_Y_LEFT
+                                     ADD   AX,Ball_Size
+                                     SUB   AX,2
+                                     CMP   AX ,PADDLE_Y2
+                                     JLE   Neg_Velocity_Y_Two_Player2
 
-                                     NEG   Ball_Velocity_X2
-                                     RET
+                                     MOV   AX,PADDLE_Y2
+                                     ADD   AX,PADDLE_WIDTH
+                                     SUB   AX,2
+                                     CMP   Ball_Y_LEFT,AX
+                                     JGE   Neg_Velocity_Y_Two_Player2
+
     Neg_Velocity_X_Two_Player2:      
                                      NEG   Ball_Velocity_X2
                                      RET
