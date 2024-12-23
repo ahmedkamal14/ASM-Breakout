@@ -31,6 +31,10 @@
     ; BALL DATA
     Ball_X              DW  160
     Ball_Y              DW  158
+    Ball_X_Right        DW  120
+    Ball_Y_Right        DW  140
+    Ball_X_Left         DW  160
+    Ball_Y_Left         DW  170
     Ball_Size           DW  3
     Ball_Velocity_X     DW  4
     Ball_Velocity_Y     DW  4
@@ -645,6 +649,9 @@ START_TWO_PLAYER PROC
 
     ;Draw Bricks
                                 CALL  Draw_Bricks
+                                CALL  Draw_Ball_Right
+                                CALL  Draw_Ball_Left
+
 
 
     ; DRAW PADDLE 1
@@ -1227,6 +1234,58 @@ Draw_Ball PROC
 
                                 RET
                                 ENDP  Draw_Ball
+Draw_Ball_Right PROC
+    ;initialization
+                                MOV   CX,Ball_Y_Right
+                                MOV   DX, Ball_X_Right
+
+    Draw_Ball_Horizontal_Right: 
+    ;Update Columns
+                                MOV   AH,0CH
+                                MOV   AL,05                                   ;color
+                                INT   10H
+                                INC   CX
+                                MOV   AX,CX
+                                SUB   AX,Ball_Y_Right
+                                CMP   AX,Ball_Size
+                                JNG   Draw_Ball_Horizontal_Right
+
+    ;Update Rows
+                                MOV   CX,Ball_Y_Right
+                                INC   DX
+                                MOV   AX,DX
+                                SUB   AX,Ball_X_Right
+                                CMP   AX,Ball_Size
+                                JNG   Draw_Ball_Horizontal_Right
+
+                                RET
+                                ENDP  Draw_Ball_Right
+Draw_Ball_Left PROC
+    ;initialization
+                                MOV   CX,Ball_Y_Left
+                                MOV   DX, Ball_X_Left
+
+    Draw_Ball_Horizontal_Left:  
+    ;Update Columns
+                                MOV   AH,0CH
+                                MOV   AL,09                                   ;color
+                                INT   10H
+                                INC   CX
+                                MOV   AX,CX
+                                SUB   AX,Ball_Y_Left
+                                CMP   AX,Ball_Size
+                                JNG   Draw_Ball_Horizontal_Left
+
+    ;Update Rows
+                                MOV   CX,Ball_Y_Left
+                                INC   DX
+                                MOV   AX,DX
+                                SUB   AX,Ball_X_Left
+                                CMP   AX,Ball_Size
+                                JNG   Draw_Ball_Horizontal_Left
+
+                                RET
+                                ENDP  Draw_Ball_Left
 
 Initialize_Bricks_Positions PROC
                                 PUSH  AX
