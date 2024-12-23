@@ -1,5 +1,5 @@
-.MODEL SMALL
-.STACK 100H
+.MODEL small
+.STACK 400H
 .DATA
     ; PADDLE DATA
     PADDLE_X            DW  180
@@ -99,7 +99,7 @@
 
 .CODE
 
-MAIN proc
+MAIN proc far
     ; Initialize the data segment
                                 mov   ax, @data
                                 mov   ds, ax
@@ -218,6 +218,7 @@ MAIN endp
 
 
     ; CHAT PROCs----------------------------------------------------------------------------------------------------
+
 START_CHAT PROC
                                 mov   ax, @data
                                 mov   ds, ax
@@ -449,13 +450,12 @@ START_CHAT PROC
                                 RET
 START_CHAT ENDP
 
-
     ; ONE PLAYER PROC---------------------------------------------------------------------------------------------------
 START_ONE_PLAYER PROC
 
     ; INITIALIZE DATA SEGMENT
-                                MOV   AX, @DATA
-                                MOV   DS, AX
+    ; MOV   AX, @DATA
+    ; MOV   DS, AX
 
     ; CALC SCREEN SIZE AND STORE IT
                                 MOV   AX, SCREEN_WIDTH
