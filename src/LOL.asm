@@ -558,8 +558,8 @@ START_ONE_PLAYER PROC
                                      PUSH  DX
                                      CALL  INPUT_MAIN_LOOP
 
-                                     CMP   ESCSTATUS, 0
-                                     JNE   EXIT_MODE
+                                     CMP   ESCSTATUS, 3
+                                     JE    EXIT_MODE
 
                                      POP   DX
                                      POP   CX
@@ -1539,6 +1539,40 @@ Move_Ball PROC
                                      CMP   Ball_X, AX
                                      JL    SKIP
                                      INC   ESCSTATUS
+
+    ;Erase paddle
+    ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
+                                     MOV   AX, PADDLE_X
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PADDLE_Y
+                                     MOV   DI, AX
+
+
+                                     MOV   DX, PADDLE_HEIGHT
+                                     mov   si, PADDLE_WIDTH
+                                     MOV   AL, 0
+                                     CALL  Draw_Single_Rect
+
+    ;Reset paddle and ball positions
+                                     MOV   Ball_X, 160
+                                     MOV   Ball_Y, 158
+                                     MOV   PADDLE_X, 180
+                                     MOV   PADDLE_Y, 140
+
+    ;Draw New paddle
+                                     MOV   AX, PADDLE_X
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PADDLE_Y
+                                     MOV   DI, AX
+
+
+                                     MOV   DX, PADDLE_HEIGHT
+                                     mov   si, PADDLE_WIDTH
+                                     MOV   AL, PADDLE_COLOR
+                                     CALL  Draw_Single_Rect
+                                     JMP   STOP
     SKIP:                            
        
                                      MOV   AX,Ball_Velocity_X
