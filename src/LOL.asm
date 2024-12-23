@@ -1481,7 +1481,7 @@ Draw_Black_Ball PROC
                                      ENDP  Draw_Black_Ball
 Draw_Black_Ball_Right PROC
     ;initialization
-                                     MOV   CX,Ball_Y_Right
+                                     MOV   CX, Ball_Y_Right
                                      MOV   DX, Ball_X_Right
 
     Draw_Black_Ball_Horizontal_Right:
@@ -1566,11 +1566,13 @@ Move_Ball PROC
 
                                      MOV   AX,Ball_X
                                      ADD   AX,Ball_Size
+                                     ADD   AX,2
                                      CMP   AX ,PADDLE_X
                                      JNG   STOP
 
                                      MOV   AX,PADDLE_X
                                      ADD   AX,PADDLE_HEIGHT
+                                     ADD   AX,2
                                      CMP   Ball_X,AX
                                      JNL   STOP
 
@@ -1578,11 +1580,13 @@ Move_Ball PROC
 
                                      MOV   AX,Ball_Y
                                      ADD   AX,Ball_Size
+                                     ADD   AX,2
                                      CMP   AX ,PADDLE_Y
                                      JNG   STOP
 
                                      MOV   AX,PADDLE_Y
                                      ADD   AX,PADDLE_WIDTH
+                                     ADD   AX,2
                                      CMP   Ball_Y,AX
                                      JNL   STOP
 
@@ -1642,11 +1646,13 @@ Move_Ball_Two_Player_Left PROC
 
                                      MOV   AX,Ball_X_Right
                                      ADD   AX,Ball_Size
+                                     ADD   AX,2
                                      CMP   AX ,PADDLE_X1
                                      JNG   STOP_Two_Player
 
                                      MOV   AX,PADDLE_X1
                                      ADD   AX,PADDLE_HEIGHT
+                                     ADD   AX,2
                                      CMP   Ball_X_Right,AX
                                      JNL   STOP_Two_Player
 
@@ -1654,11 +1660,13 @@ Move_Ball_Two_Player_Left PROC
 
                                      MOV   AX,Ball_Y_Right
                                      ADD   AX,Ball_Size
+                                     ADD   AX,2
                                      CMP   AX ,PADDLE_Y1
                                      JNG   STOP_Two_Player
 
                                      MOV   AX,PADDLE_Y1
                                      ADD   AX,PADDLE_WIDTH
+                                     ADD   AX,2
                                      CMP   Ball_Y_Right,AX
                                      JNL   STOP_Two_Player
 
@@ -1711,11 +1719,13 @@ Move_Ball_Two_Player_Right PROC
 
                                      MOV   AX,Ball_X_Left
                                      ADD   AX,Ball_Size
+                                     ADD   AX,2
                                      CMP   AX ,PADDLE_X2
                                      JNG   STOP_Two_Player2
 
                                      MOV   AX,PADDLE_X2
                                      ADD   AX,PADDLE_HEIGHT
+                                     ADD   AX,2
                                      CMP   Ball_X_Left,AX
                                      JNL   STOP_Two_Player2
 
@@ -1723,11 +1733,13 @@ Move_Ball_Two_Player_Right PROC
 
                                      MOV   AX,Ball_Y_Left
                                      ADD   AX,Ball_Size
+                                     ADD   AX,2
                                      CMP   AX ,PADDLE_Y2
                                      JNG   STOP_Two_Player2
 
                                      MOV   AX,PADDLE_Y2
                                      ADD   AX,PADDLE_WIDTH
+                                     ADD   AX,2
                                      CMP   Ball_Y_Left,AX
                                      JNL   STOP_Two_Player2
 
