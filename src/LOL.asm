@@ -2,103 +2,112 @@
 .STACK 600H
 .DATA
     ; PADDLE DATA
-    PADDLE_X            DW  180
-    PADDLE_Y            DW  140
-    PADDLE_WIDTH        DW  40
-    PADDLE_HEIGHT       DW  6
-    PADDLE_COLOR        DB  8
-    PADDLE_SPEED        DW  6
+    PADDLE_X             DW  180
+    PADDLE_Y             DW  140
+    PADDLE_WIDTH         DW  40
+    PADDLE_HEIGHT        DW  6
+    PADDLE_COLOR         DB  8
+    PADDLE_SPEED         DW  6
 
     ; SCREEN INFO
-    SCREEN_WIDTH        DW  320
-    SCREEN_HEIGHT       DW  200
-    SCREEN_SIZE         DW  ?                                                         ; SCREEN_WIDTH * SCREEN_HEIGHT
+    SCREEN_WIDTH         DW  320
+    SCREEN_HEIGHT        DW  200
+    SCREEN_SIZE          DW  ?                                                         ; SCREEN_WIDTH * SCREEN_HEIGHT
 
-    SCREEN_WIDTH_CONST  EQU 320
-    SCREEN_HEIGHT_CONST EQU 200
+    SCREEN_WIDTH_CONST   EQU 320
+    SCREEN_HEIGHT_CONST  EQU 200
 
     ; BORDERS
-    BORDER_LEFT         DW  0
-    BORDER_RIGHT        DW  ?                                                         ; SCREEN_WIDTH - PADDLE_WIDTH
-    BORDER_TOP          DW  0
-    BORDER_BOTTOM       DW  SCREEN_HEIGHT - PADDLE_HEIGHT
-    BORDER_MIDDLE       EQU 161
+    BORDER_LEFT          DW  0
+    BORDER_RIGHT         DW  ?                                                         ; SCREEN_WIDTH - PADDLE_WIDTH
+    BORDER_TOP           DW  0
+    BORDER_BOTTOM        DW  SCREEN_HEIGHT - PADDLE_HEIGHT
+    BORDER_MIDDLE        EQU 161
 
     ; NEEDED COLORS
-    BLACK               DB  0
-    WHITE               DB  15
+    BLACK                DB  0
+    WHITE                DB  15
 
     ; BALL DATA
-    Ball_X              DW  160
-    Ball_Y              DW  158
-    Ball_X_Right        DW  120
-    Ball_Y_Right        DW  140
-    Ball_X_Left         DW  160
-    Ball_Y_Left         DW  170
-    Ball_Size           DW  3
-    Ball_Velocity_X     DW  4
-    Ball_Velocity_Y     DW  4
-    Prev_Time           DB  0
-    BALL_COLOR          DB  0
+    Ball_X               DW  160
+    Ball_Y               DW  158
+    Ball_X_Right         DW  120
+    Ball_Y_Right         DW  140
+    Ball_X_Left          DW  160
+    Ball_Y_Left          DW  170
+    Ball_Size            DW  3
+    Ball_Velocity_X      DW  4
+    Ball_Velocity_Y      DW  4
+    Prev_Time            DB  0
+    BALL_COLOR           DB  0
+
+    ; TWO PLAYER VELOCITY
+    Ball_Velocity_X1     DW  4
+    Ball_Velocity_Y1     DW  4
+    Ball_Velocity_X2     DW  4
+    Ball_Velocity_Y2     DW  4
 
     ;BRICKS DATA
-    Brick_Width         DW  35
-    Brick_Height        DW  9
-    Brick_Color         DB  9
-    Rows_Number         DB  5
-    Cols_Number         DB  10
-    Gap_X               DW  5
-    Gap_Y               DW  5
-    Bricks_States       DB  40 DUP(1)
-    Bricks_Positions    DW  80 DUP(?)
-    Bricks_Rows         DW  5
-    Bricks_Cols         DW  8
+    Brick_Width          DW  35
+    Brick_Height         DW  9
+    Brick_Color          DB  9
+    Rows_Number          DB  5
+    Cols_Number          DB  10
+    Gap_X                DW  5
+    Gap_Y                DW  5
+    Bricks_States        DB  40 DUP(1)
+    Bricks_Positions     DW  80 DUP(?)
+    Bricks_Rows          DW  5
+    Bricks_Cols          DW  8
 
     ; SCORE DATA AND LIVES
-    SCORE               DB  'SCORE: $'
-    LIVES               DB  '              LIVES: $'
-    ENDING              DB  '$'
-    SCORE_COUNT         DW  0
-    LIVES_COUNT         DB  51
+    SCORE                DB  'SCORE: $'
+    LIVES                DB  '              LIVES: $'
+    ENDING               DB  '$'
+    SCORE_COUNT          DW  0
+    LIVES_COUNT          DB  3
 
-    FRAME_DELAY         EQU 64
+    SCORE_COUNT_PLAYER_1 DW  0
+    SCORE_COUNT_PLAYER_2 DW  0
+
+    FRAME_DELAY          EQU 64
 
     ; MAIN VARS
-    string1             db  'CHAT MODE => 1.', 13, 10, '$'
-    string2             db  'ONE PLAYER MODE => 2.', 13, 10, '$'
-    string3             db  'TWO PLAYERS MODE => 3.', 13, 10, '$'
-    string4             db  'Exit => Esc.', 13, 10, '$'
+    string1              db  'CHAT MODE => 1.', 13, 10, '$'
+    string2              db  'ONE PLAYER MODE => 2.', 13, 10, '$'
+    string3              db  'TWO PLAYERS MODE => 3.', 13, 10, '$'
+    string4              db  'Exit => Esc.', 13, 10, '$'
 
     ; CHAT VARS
-    sendMessage         DB  'Serial communication: Send one byte', 0Ah, 0Dh, '$'
-    INITIALMESSAGE      DB  'CHAT IS ON', 0Ah, 0Dh, '$'
-    receiveMessage      DB  'Receiver on, press ESC to end session', 0Ah, 0Dh, '$'
-    inputPrompt         DB  'MESSAGE: ', 0Ah, 0Dh, '$'
-    goodbyeMessage      DB  ' Goodbye!', 0Ah, 0Dh, '$'
-    receivedValue       DB  2 dup('$')                                                ; Buffer to store the received character and null-terminate
-    inData              DB  30, ?, 30 dup('$')
-    emptyStr            DB  10, 13, '$'
-    ReceivedSTRING      DB  10, 13, 'Receiving:  ', '$'
-    SendingString       DB  10, 13,'Sending: ', '$'
-    sendFLAG            DB  0
-    recFLAG             DB  0
+    sendMessage          DB  'Serial communication: Send one byte', 0Ah, 0Dh, '$'
+    INITIALMESSAGE       DB  'CHAT IS ON', 0Ah, 0Dh, '$'
+    receiveMessage       DB  'Receiver on, press ESC to end session', 0Ah, 0Dh, '$'
+    inputPrompt          DB  'MESSAGE: ', 0Ah, 0Dh, '$'
+    goodbyeMessage       DB  ' Goodbye!', 0Ah, 0Dh, '$'
+    receivedValue        DB  2 dup('$')                                                ; Buffer to store the received character and null-terminate
+    inData               DB  30, ?, 30 dup('$')
+    emptyStr             DB  10, 13, '$'
+    ReceivedSTRING       DB  10, 13, 'Receiving:  ', '$'
+    SendingString        DB  10, 13,'Sending: ', '$'
+    sendFLAG             DB  0
+    recFLAG              DB  0
 
     ; ESCAPE STATUS
-    ESCSTATUS           DB  0
+    ESCSTATUS            DB  0
 
 
     ; SCORE STRING
-    SCORE_STRING        DB  '-$'
+    SCORE_STRING         DB  '-$'
 
     ; Two Player Mode
-    PADDLE_X1           DW  180
-    PADDLE_Y1           DW  60
+    PADDLE_X1            DW  180
+    PADDLE_Y1            DW  60
 
-    PADDLE_X2           DW  180
-    PADDLE_Y2           DW  225
+    PADDLE_X2            DW  180
+    PADDLE_Y2            DW  225
 
-    PADDLE_COLOR1       DB  8
-    PADDLE_COLOR2       DB  8
+    PADDLE_COLOR1        DB  8
+    PADDLE_COLOR2        DB  8
 
 
 .CODE
@@ -625,6 +634,10 @@ START_TWO_PLAYER PROC
                                      dec   cx                                      ; Decrement the line counter
                                      jnz   vert                                    ; Repeat until CX = 0
 
+                                     call Draw_Score_Container
+                                     call Draw_Score_Container_right
+
+                                    
     ; ----------------------------------------------------------------------------------------------
 
                                      MOV   Bricks_Rows, 3
@@ -651,6 +664,9 @@ START_TWO_PLAYER PROC
                                      CALL  Draw_Bricks
                                      CALL  Draw_Ball_Right
                                      CALL  Draw_Ball_Left
+
+                                     NEG   Ball_Velocity_X1
+                                     NEG   Ball_Velocity_X2
 
 
 
@@ -693,20 +709,24 @@ START_TWO_PLAYER PROC
                                      MOV   Prev_Time, DL
 
     ; Handle user input
-    ;  PUSH  AX
-    ;  PUSH  BX
-    ;  PUSH  CX
-    ;  PUSH  DX
-    ;  CALL  INPUT_TWO_PLAYER
-    ;  POP   DX
-    ;  POP   CX
-    ;  POP   BX
-    ;  POP   AX
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
+                                     CALL  INPUT_TWO_PLAYER
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
 
     ; Handle ball movement and collision
                                      CALL  Draw_Black_Ball_Right
-                                     CALL  Move_Ball_Two_Player
+                                     CALL  Move_Ball_Two_Player_Left
                                      CALL  Draw_Ball_Right
+
+                                     CALL  Draw_Black_Ball_Left
+                                     CALL  Move_Ball_Two_Player_Right
+                                     CALL  Draw_Ball_Left
 
     ; Update the paddle position
                                      PUSH  DX
@@ -875,85 +895,6 @@ INPUT_TWO_PLAYER PROC
                                      RET
 INPUT_TWO_PLAYER ENDP
 
-    ; INPUT_PLAYER_1 PROC
-
-    ;     ; CHECK IF A KEY IS PRESSED
-    ;                                 MOV   AH, 01H
-    ;                                 INT   16H
-    ;                                 JZ    PLAYER_1_EXIT
-
-    ;     ; FETCH THE KEY DETAILS
-    ;                                 MOV   AH, 00H
-    ;                                 INT   16H
-
-    ;     ; HANDLE LEFT ARROW KEY
-    ;                                 CMP   AH, 4BH
-    ;                                 JE    PLAYER_1_MOVE_LEFT
-
-    ;     ; HANDLE RIGHT ARROW KEY
-    ;                                 CMP   AH, 4DH
-    ;                                 JE    PLAYER_1_MOVE_RIGHT
-
-    ;     ; HANDLE ESC KEY
-    ;                                 CMP   AL, 1BH
-    ;                                 JNE   PLAYER_1_EXIT
-    ;                                 INC   ESCSTATUS
-    ;     ;   JMP  INPUT_MAIN_LOOP
-    ;                                 ret
-
-    ;     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
-    ;     PLAYER_1_MOVE_LEFT:
-    ;                                 MOV   AX, PADDLE_Y1
-    ;                                 SUB   AX, PADDLE_SPEED
-    ;                                 CMP   AX, BORDER_LEFT
-    ;                                 JL    PLAYER_1_MOVE_LEFT_DONE
-    ;                                 MOV   [PADDLE_Y1], AX
-    ;     PLAYER_1_MOVE_LEFT_DONE:
-    ;                                 CALL  PLAYER_1_CLEAR_PADDLE
-
-    ;                                 MOV   AX, PADDLE_X1
-    ;                                 MOV   DX, 320
-    ;                                 MUL   DX
-    ;                                 ADD   AX, PADDLE_Y1
-    ;                                 MOV   DI, AX
-
-    ;                                 MOV   DX, PADDLE_HEIGHT
-    ;                                 mov   si, PADDLE_WIDTH
-
-    ;                                 MOV   AL, PADDLE_COLOR1
-
-    ;                                 CALL  Draw_Single_Rect
-    ;                                 RET
-    ;     ;   JMP  INPUT_MAIN_LOOP
-
-    ;     ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
-    ;     PLAYER_1_MOVE_RIGHT:
-    ;                                 MOV   AX, PADDLE_Y1
-    ;                                 ADD   AX, PADDLE_SPEED
-    ;                                 CMP   AX, BORDER_MIDDLE
-    ;                                 JG    PLAYER_1_MOVE_RIGHT_DONE
-    ;                                 MOV   [PADDLE_Y1], AX
-    ;     PLAYER_1_MOVE_RIGHT_DONE:
-    ;                                 CALL  PLAYER_1_CLEAR_PADDLE
-
-    ;                                 MOV   AX, PADDLE_X1
-    ;                                 MOV   DX, 320
-    ;                                 MUL   DX
-    ;                                 ADD   AX, PADDLE_Y1
-    ;                                 MOV   DI, AX
-
-    ;                                 MOV   DX, PADDLE_HEIGHT
-    ;                                 mov   si, PADDLE_WIDTH
-
-    ;                                 MOV   AL, PADDLE_COLOR1
-                          
-    ;                                 CALL  Draw_Single_Rect
-    ;     ;   JMP  INPUT_MAIN_LOOP
-
-    ;     PLAYER_1_EXIT:
-    ;                                 RET
-    ; INPUT_PLAYER_1 ENDP
-
 PLAYER_1_CLEAR_PADDLE PROC
                                      MOV   AX, PADDLE_X1
                                      MOV   DX, 320
@@ -970,84 +911,6 @@ PLAYER_1_CLEAR_PADDLE PROC
                                      RET
 PLAYER_1_CLEAR_PADDLE ENDP
 
-    ; INPUT_PLAYER_2 PROC
-
-    ;     ; CHECK IF A KEY IS PRESSED
-    ;                                 MOV   AH, 01H
-    ;                                 INT   16H
-    ;                                 JZ    PLAYER_2_EXIT
-
-    ;     ; FETCH THE KEY DETAILS
-    ;                                 MOV   AH, 00H
-    ;                                 INT   16H
-
-    ;     ; HANDLE UP ARROW KEY
-    ;                                 CMP   AH, 61H
-    ;                                 JE    PLAYER_2_MOVE_LEFT
-
-    ;     ; HANDLE RIGHT ARROW KEY
-    ;                                 CMP   AH, 64H
-    ;                                 JE    PLAYER_2_MOVE_RIGHT
-
-    ;     ; HANDLE ESC KEY
-    ;                                 CMP   AL, 1BH
-    ;                                 JNE   PLAYER_2_EXIT
-    ;                                 INC   ESCSTATUS
-    ;     ;   JMP  INPUT_MAIN_LOOP
-    ;                                 RET
-
-    ;     ; MOVE PADDLE LEFT AND CHECK FOR BORDERS
-    ;     PLAYER_2_MOVE_LEFT:
-    ;                                 MOV   AX, PADDLE_Y2
-    ;                                 SUB   AX, PADDLE_SPEED
-    ;                                 CMP   AX, BORDER_MIDDLE
-    ;                                 JL    PLAYER_2_MOVE_LEFT_DONE
-    ;                                 MOV   [PADDLE_Y1], AX
-    ;     PLAYER_2_MOVE_LEFT_DONE:
-    ;                                 CALL  PLAYER_2_CLEAR_PADDLE
-
-    ;                                 MOV   AX, PADDLE_X2
-    ;                                 MOV   DX, 320
-    ;                                 MUL   DX
-    ;                                 ADD   AX, PADDLE_Y2
-    ;                                 MOV   DI, AX
-
-    ;                                 MOV   DX, PADDLE_HEIGHT
-    ;                                 mov   si, PADDLE_WIDTH
-
-    ;                                 MOV   AL, PADDLE_COLOR2
-
-    ;                                 CALL  Draw_Single_Rect
-    ;                                 RET
-    ;     ;   JMP  INPUT_MAIN_LOOP
-
-    ;     ; MOVE PADDLE RIGHT AND CHECK FOR BORDERS
-    ;     PLAYER_2_MOVE_RIGHT:
-    ;                                 MOV   AX, PADDLE_Y2
-    ;                                 ADD   AX, PADDLE_SPEED
-    ;                                 CMP   AX, BORDER_RIGHT
-    ;                                 JG    PLAYER_2_MOVE_RIGHT_DONE
-    ;                                 MOV   [PADDLE_Y1], AX
-    ;     PLAYER_2_MOVE_RIGHT_DONE:
-    ;                                 CALL  PLAYER_2_CLEAR_PADDLE
-
-    ;                                 MOV   AX, PADDLE_X2
-    ;                                 MOV   DX, 320
-    ;                                 MUL   DX
-    ;                                 ADD   AX, PADDLE_Y2
-    ;                                 MOV   DI, AX
-
-    ;                                 MOV   DX, PADDLE_HEIGHT
-    ;                                 mov   si, PADDLE_WIDTH
-
-    ;                                 MOV   AL, PADDLE_COLOR2
-                          
-    ;                                 CALL  Draw_Single_Rect
-    ;     ;   JMP  INPUT_MAIN_LOOP
-
-    ;     PLAYER_2_EXIT:
-    ;                                 RET
-    ; INPUT_PLAYER_2 ENDP
 
 PLAYER_2_CLEAR_PADDLE PROC
                                      MOV   AX, PADDLE_X2
@@ -1159,6 +1022,7 @@ INPUT_CLEAR_SCREEN ENDP
     ;DRAW SCORE CONTAINER------------------------------------------------------------------------------------------------------
 
 Draw_Score_Container PROC
+
                                      mov   al, 2
                                      mov   di, 325
                                      mov   cx, 26d
@@ -1197,6 +1061,49 @@ Draw_Score_Container PROC
                                      ret
 Draw_Score_Container ENDP
 
+;---------------------------------------------------------------------------------------------------------------------------
+
+Draw_Score_Container_right PROC
+
+                                     mov   al, 2
+                                     mov   di, 610
+                                     mov   cx, 26d
+                                     rep   stosb
+
+                                     mov   al, 2
+                                     mov   di, 2210
+                                     mov   cx, 26d
+                                     rep   stosb
+
+                                     mov   di, 610                                 ; Starting position in video memory (DI = 325)
+                                     mov   dx, di                                  ; Save the initial position in DX
+                                     mov   cx, 5                                   ; Length of the vertical line
+                                     mov   al, 2                                   ; Pixel color (e.g., 2)
+
+    verLineR:                         
+                                     stosb                                         ; Write AL (color) to memory at DI
+                                     mov   di, dx                                  ; Restore DI to the starting position
+                                     add   di, 320                                 ; Move to the next row (320 bytes down)
+                                     mov   dx, di                                  ; Save new starting position for the next iteration
+                                     dec   cx                                      ; Decrement the line counter
+                                     jnz   verLineR                                 ; Repeat until CX = 0
+
+                                     mov   di, 636                               ; Starting position in video memory (DI = 325)
+                                     mov   dx, di                                  ; Save the initial position in DX
+                                     mov   cx, 5                                   ; Length of the vertical line
+                                     mov   al, 2                                   ; Pixel color (e.g., 2)
+
+    verLineR2:                        
+                                     stosb                                         ; Write AL (color) to memory at DI
+                                     mov   di, dx                                  ; Restore DI to the starting position
+                                     add   di, 320                                 ; Move to the next row (320 bytes down)
+                                     mov   dx, di                                  ; Save new starting position for the next iteration
+                                     dec   cx                                      ; Decrement the line counter
+                                     jnz   verLineR2
+                                     ret
+Draw_Score_Container_right ENDP
+
+
     ;DRAWSCORE PROGRESS-----------------------------------------------------------------------------------------------------
 Draw_Score PROC
                                      mov   al, 0Dh
@@ -1224,22 +1131,11 @@ Draw_Single_Rect proc
     ;al=> color
     ;  MOV AX, @DATA
     ;  MOV DS, AX
-                     
-        
-    ;  mov ax,0A000h
-    ;  mov es,ax
-    ;  mov ah,0
-    ;  mov al,13h
-    ;  int 10h
-    ; mov dx, 10d
-    ; mov di, 650d
     ; STORE THE VALUE OF  PADDLE_X IN AX THEN MULTIPLY IT BY 320 AND THEN ADD PADDLE_Y THEN STORE IT IN DI
                         
     DRAW_IN_ROW:                     
 
                                      mov   bx, di
-    ;mov al,0eh
-    ;mov cx,18
                                      mov   cx, si
                                      rep   stosb
                                      mov   di, bx
@@ -1589,10 +1485,10 @@ Draw_Black_Ball_Left PROC
                                      JNG   Draw_Black_Ball_Horizontal_Left
 
     ;Update Rows
-                                     MOV   CX,Ball_Y
+                                     MOV   CX,Ball_Y_Left
                                      INC   DX
                                      MOV   AX,DX
-                                     SUB   AX,Ball_X
+                                     SUB   AX,Ball_X_Left
                                      CMP   AX,Ball_Size
                                      JNG   Draw_Black_Ball_Horizontal_Left
 
@@ -1675,14 +1571,14 @@ Move_Ball PROC
 Move_Ball ENDP
 
 
-Move_Ball_Two_Player PROC
+Move_Ball_Two_Player_Left PROC
                                      MOV   AX, SCREEN_HEIGHT_CONST - 10            ;Compare wirh paddle to see if the ball is below it
                                      CMP   Ball_X_Right, AX
                                      JL    SKIP_Two_Player
                                      INC   ESCSTATUS
     SKIP_Two_Player:                 
        
-                                     MOV   AX,Ball_Velocity_X
+                                     MOV   AX,Ball_Velocity_X1
                                      ADD   Ball_X_Right,AX
                                      CMP   Ball_X_Right,10                         ; Instead of zero to maintain score visual appearance
                                      JLE   Neg_Velocity_X_Two_Player               ;up and down
@@ -1692,63 +1588,420 @@ Move_Ball_Two_Player PROC
                                      JGE   Neg_Velocity_X_Two_Player               ; up and down
 
 
-                                     MOV   AX,Ball_Velocity_Y
+                                     MOV   AX,Ball_Velocity_Y1
                                      ADD   Ball_Y_Right,AX
 
 
 
                                      CMP   Ball_Y_Right,0                          ;Right edge of our screen
                                      JLE   Neg_Velocity_Y_Two_Player
-                                     MOV   AX,BORDER_MIDDLE                        ;Middle of sreen
+                                     MOV   AX,BORDER_MIDDLE - 5                    ;Middle of sreen
                                      CMP   Ball_Y_Right,AX
                                      JGE   Neg_Velocity_Y_Two_Player
 
-                                     CALL  Bricks_Collision
-                                     RET
-
-    ;  MOV   AX,Ball_X
-    ;  ADD   AX,Ball_Size
-    ;  CMP   AX ,PADDLE_X
-    ;  JNG   STOP
-
-    ;  MOV   AX,PADDLE_X
-    ;  ADD   AX,PADDLE_HEIGHT
-    ;  CMP   Ball_X,AX
-    ;  JNL   STOP
-
-
-
-    ;  MOV   AX,Ball_Y
-    ;  ADD   AX,Ball_Size
-    ;  CMP   AX ,PADDLE_Y
-    ;  JNG   STOP
-
-    ;  MOV   AX,PADDLE_Y
-    ;  ADD   AX,PADDLE_WIDTH
-    ;  CMP   Ball_Y,AX
-    ;  JNL   STOP
-
-
-    ;  NEG   Ball_Velocity_X
+                                     CALL  Bricks_Collision_Left
     ;  RET
 
+                                     MOV   AX,Ball_X_Right
+                                     ADD   AX,Ball_Size
+                                     CMP   AX ,PADDLE_X1
+                                     JNG   STOP_Two_Player
+
+                                     MOV   AX,PADDLE_X1
+                                     ADD   AX,PADDLE_HEIGHT
+                                     CMP   Ball_X_Right,AX
+                                     JNL   STOP_Two_Player
 
 
-                   
+
+                                     MOV   AX,Ball_Y_Right
+                                     ADD   AX,Ball_Size
+                                     CMP   AX ,PADDLE_Y1
+                                     JNG   STOP_Two_Player
+
+                                     MOV   AX,PADDLE_Y1
+                                     ADD   AX,PADDLE_WIDTH
+                                     CMP   Ball_Y_Right,AX
+                                     JNL   STOP_Two_Player
+
+
+                                     NEG   Ball_Velocity_X1
+                                     RET
     Neg_Velocity_X_Two_Player:       
-                                     NEG   Ball_Velocity_X
-                          
+                                     NEG   Ball_Velocity_X1
                                      RET
 
     Neg_Velocity_Y_Two_Player:       
-                                     NEG   Ball_Velocity_Y
-                         
+                                     NEG   Ball_Velocity_Y1
                                      RET
 
 
     STOP_Two_Player:                 
                                      RET
-Move_Ball_Two_Player ENDP
+Move_Ball_Two_Player_Left ENDP
+
+Move_Ball_Two_Player_Right PROC
+                                     MOV   AX, SCREEN_HEIGHT_CONST - 10            ;Compare wirh paddle to see if the ball is below it
+                                     CMP   Ball_X_Left, AX
+                                     JL    SKIP_Two_Player2
+                                     INC   ESCSTATUS
+    SKIP_Two_Player2:                
+       
+                                     MOV   AX,Ball_Velocity_X2
+                                     ADD   Ball_X_Left,AX
+                                     CMP   Ball_X_Left,10                          ; Instead of zero to maintain score visual appearance
+                                     JLE   Neg_Velocity_X_Two_Player2              ;up and down
+
+                                     MOV   AX,SCREEN_HEIGHT                        ;End of screen,,not necessary???
+                                     CMP   Ball_X_Left,AX
+                                     JGE   Neg_Velocity_X_Two_Player2              ; up and down
+
+
+                                     MOV   AX,Ball_Velocity_Y2
+                                     ADD   Ball_Y_Left,AX
+
+
+
+                                     CMP   Ball_Y_Left,BORDER_MIDDLE + 2           ;COMPARE WITH MIDDLE OF THE SCREEN
+                                     JLE   Neg_Velocity_Y_Two_Player2
+                                     MOV   AX, 318                                 ;COMPARE WITH THE RIGHT OF THE SCREEN
+                                     CMP   Ball_Y_Left,AX
+                                     JGE   Neg_Velocity_Y_Two_Player2
+
+                                     CALL  Bricks_Collision_Right
+    ;  RET
+
+                                     MOV   AX,Ball_X_Left
+                                     ADD   AX,Ball_Size
+                                     CMP   AX ,PADDLE_X2
+                                     JNG   STOP_Two_Player2
+
+                                     MOV   AX,PADDLE_X2
+                                     ADD   AX,PADDLE_HEIGHT
+                                     CMP   Ball_X_Left,AX
+                                     JNL   STOP_Two_Player2
+
+
+
+                                     MOV   AX,Ball_Y_Left
+                                     ADD   AX,Ball_Size
+                                     CMP   AX ,PADDLE_Y2
+                                     JNG   STOP_Two_Player2
+
+                                     MOV   AX,PADDLE_Y2
+                                     ADD   AX,PADDLE_WIDTH
+                                     CMP   Ball_Y_Left,AX
+                                     JNL   STOP_Two_Player2
+
+
+                                     NEG   Ball_Velocity_X2
+                                     RET
+    Neg_Velocity_X_Two_Player2:      
+                                     NEG   Ball_Velocity_X2
+                                     RET
+
+    Neg_Velocity_Y_Two_Player2:      
+                                     NEG   Ball_Velocity_Y2
+                                     RET
+
+    STOP_Two_Player2:                
+                                     RET
+Move_Ball_Two_Player_Right ENDP
+
+Bricks_Collision_Right PROC
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
+                                     PUSH  SI
+
+                                     XOR   SI, SI
+                                     XOR   CX, CX
+                                     MOV   BP, OFFSET Bricks_Positions
+
+    Bricks_Loop_Right:               
+                                     PUSH  SI
+                                     MOV   SI, CX
+                                     MOV   AL,  byte ptr [Bricks_States + SI]
+                                     POP   SI
+                                     CMP   AL, 0
+                                     JNE   D1_Right
+                                     JMP   No_Collision_Right
+    D1_Right:                        
+
+                                     PUSH  SI
+                                     SHL   SI,1
+
+    ;Load AX with Brick_X
+                                     MOV   AX, [BP + SI]
+                                     POP   SI
+                                     PUSH  SI
+                                     INC   SI
+                                     SHL   SI,1
+    ;Load Bx with Brick_Y
+                                     MOV   BX, [BP + SI]
+                                     POP   SI
+
+
+                                     MOV   DX,Ball_X_Left
+                                     ADD   DX,Ball_Size
+                                     CMP   DX ,Ax
+                                     JGE   D2_Right
+                                     JMP   No_Collision_Right
+
+    D2_Right:                        
+
+                                    
+                                     MOV   DX, AX
+                                     ADD   DX, Brick_Height
+                                     CMP   Ball_X_Left, DX
+                                     JNL   No_Collision_Right
+
+                                     MOV   DX,Ball_Y_Left
+                                     ADD   DX,Ball_Size
+                                     CMP   DX ,BX
+                                     JNG   No_Collision_Right
+
+                                     MOV   DX, BX
+                                     ADD   DX, Brick_Width
+                                     CMP   Ball_Y_Left,DX
+                                     JNL   No_Collision_Right
+
+    ;Multiply AX (y) * 320 + BX (x)
+                                     PUSH  BX
+                                     MOV   BX, 320
+                                     PUSH  DX
+                                     MUL   BX
+                                     POP   DX
+                                     POP   BX
+                                     ADD   AX, BX
+                                     MOV   DI, AX
+                                     MOV   AL, 0
+
+
+                                     PUSH  SI                                      ;Draw Rect
+                                     PUSH  DX
+                                     MOV   SI,Brick_Width
+                                     MOV   DX,Brick_Height
+                                     PUSH  CX
+                                     CALL  Draw_Single_Rect
+                                     POP   CX
+                                     POP   DX
+                                     POP   SI                                      ;After Draw single rect
+
+                                     NEG   Ball_Velocity_X2
+                                     INC   SCORE_COUNT_PLAYER_2
+
+                                     PUSHF
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
+
+    ; MAKE COLLISION SOUND
+                                     CALL  START_COLLISION_SOUND
+                    
+    ; MOV   Di, 0
+    ; mov   si, 320
+    ; MOV   AL, 000
+    ; MOV   DX,10
+
+    ;                                  PUSH  AX
+    ;                                  PUSH  BX
+    ;                                  PUSH  CX
+    ;                                  PUSH  DX
+                        
+    
+    ; ; CALL  Draw_Single_Rect
+
+    ;                                  CALL  Draw_Score
+
+    ;                                  POP   DX
+    ;                                  POP   CX
+    ;                                  POP   BX
+    ;                                  POP   AX
+                        
+
+    ;  CALL  DRAW_SCORE
+
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
+                                     POPF
+
+                                     PUSH  SI
+                                     MOV   SI,CX
+                                     MOV   byte ptr [Bricks_States + SI], 0
+                                     POP   SI
+
+    No_Collision_Right:              
+                                     INC   CX
+                                     ADD   SI, 2
+
+                                     CMP   SI, 64
+                                     JGE   DUMMY11
+                                     JMP   Bricks_Loop_Right
+
+    DUMMY11:                         
+
+                                     POP   SI
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
+
+                                     RET
+                                     ENDP  Bricks_Collision_Right
+
+
+Bricks_Collision_Left PROC
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
+                                     PUSH  SI
+
+                                     XOR   SI, SI
+                                     XOR   CX, CX
+                                     MOV   BP, OFFSET Bricks_Positions
+
+    Bricks_Loop_left:                
+                                     PUSH  SI
+                                     MOV   SI, CX
+                                     MOV   AL,  byte ptr [Bricks_States + SI]
+                                     POP   SI
+                                     CMP   AL, 0
+                                     JNE   D1_Left
+                                     JMP   No_Collision_Left
+    D1_Left:                         
+
+                                     PUSH  SI
+                                     SHL   SI,1
+
+    ;Load AX with Brick_X
+                                     MOV   AX, [BP + SI]
+                                     POP   SI
+                                     PUSH  SI
+                                     INC   SI
+                                     SHL   SI,1
+    ;Load Bx with Brick_Y
+                                     MOV   BX, [BP + SI]
+                                     POP   SI
+
+
+                                     MOV   DX,Ball_X_Right
+                                     ADD   DX,Ball_Size
+                                     CMP   DX ,Ax
+                                     JGE   D2_Left
+                                     JMP   No_Collision_Left
+
+    D2_Left:                         
+
+                                    
+                                     MOV   DX, AX
+                                     ADD   DX, Brick_Height
+                                     CMP   Ball_X_Right, DX
+                                     JNL   No_Collision_Left
+
+                                     MOV   DX,Ball_Y_Right
+                                     ADD   DX,Ball_Size
+                                     CMP   DX ,BX
+                                     JNG   No_Collision_Left
+
+                                     MOV   DX, BX
+                                     ADD   DX, Brick_Width
+                                     CMP   Ball_Y_Right,DX
+                                     JNL   No_Collision_Left
+
+    ;Multiply AX (y) * 320 + BX (x)
+                                     PUSH  BX
+                                     MOV   BX, 320
+                                     PUSH  DX
+                                     MUL   BX
+                                     POP   DX
+                                     POP   BX
+                                     ADD   AX, BX
+                                     MOV   DI, AX
+                                     MOV   AL, 0
+
+
+                                     PUSH  SI                                      ;Draw Rect
+                                     PUSH  DX
+                                     MOV   SI,Brick_Width
+                                     MOV   DX,Brick_Height
+                                     PUSH  CX
+                                     CALL  Draw_Single_Rect
+                                     POP   CX
+                                     POP   DX
+                                     POP   SI                                      ;After Draw single rect
+
+                                     NEG   Ball_Velocity_X1
+                                     INC   SCORE_COUNT_PLAYER_1
+
+                                     PUSHF
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
+
+    ; MAKE COLLISION SOUND
+                                     CALL  START_COLLISION_SOUND
+                    
+    ; MOV   Di, 0
+    ; mov   si, 320
+    ; MOV   AL, 000
+    ; MOV   DX,10
+
+    ;                                  PUSH  AX
+    ;                                  PUSH  BX
+    ;                                  PUSH  CX
+    ;                                  PUSH  DX
+                        
+    
+    ; ; CALL  Draw_Single_Rect
+
+    ;                                  CALL  Draw_Score
+
+    ;                                  POP   DX
+    ;                                  POP   CX
+    ;                                  POP   BX
+    ;                                  POP   AX
+                        
+
+    ;  CALL  DRAW_SCORE
+
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
+                                     POPF
+
+                                     PUSH  SI
+                                     MOV   SI,CX
+                                     MOV   byte ptr [Bricks_States + SI], 0
+                                     POP   SI
+
+    No_Collision_Left:               
+                                     INC   CX
+                                     ADD   SI, 2
+
+                                     CMP   SI, 64
+                                     JGE   DUMMY10
+                                     JMP   Bricks_Loop_left
+
+    DUMMY10:                         
+
+                                     POP   SI
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
+
+                                     RET
+                                     ENDP  Bricks_Collision_Left
+
+
 
     ;-----------------------------------------------------------------------------------------------------------------------
 Clear_Screen PROC
@@ -1763,7 +2016,6 @@ Clear_Screen PROC
     ;  INT  10H
                                      RET
                                      ENDP  Clear_Screen
-
 
     ;--------------------------------------------------------------------------------------------------------
 Bricks_Collision PROC
@@ -1810,6 +2062,7 @@ Bricks_Collision PROC
 
     D2:                              
 
+                                    
                                      MOV   DX, AX
                                      ADD   DX, Brick_Height
                                      CMP   Ball_X, DX
