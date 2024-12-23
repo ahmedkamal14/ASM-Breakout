@@ -634,8 +634,30 @@ START_TWO_PLAYER PROC
                                      dec   cx                                      ; Decrement the line counter
                                      jnz   vert                                    ; Repeat until CX = 0
 
-                                     call Draw_Score_Container
-                                     call Draw_Score_Container_right
+                                     call  Draw_Score_Container
+                                     call  Draw_Score_Container_right
+
+
+    ; INITIALIZATIONS
+                                    
+
+                                     MOV   ESCSTATUS, 0
+                                     MOV   SCORE_COUNT_PLAYER_2, 0
+
+                                     MOV   Ball_X_Right , 120
+                                     MOV   Ball_Y_Right , 140
+                                     MOV   Ball_X_Left , 160
+                                     MOV   Ball_Y_Left , 170
+                                    
+    ; CHECK IF THE BALL VELOCITY IS NEG MAKE IT POSITIVE
+                                     CMP   Ball_Velocity_X1, 0
+                                     JL    DUMMY12
+                                     NEG   Ball_Velocity_X1
+    DUMMY12:                         
+                                     CMP   Ball_Velocity_X2, 0
+                                     JL    DUMMY13
+                                     NEG   Ball_Velocity_X2
+    DUMMY13:                         
 
                                     
     ; ----------------------------------------------------------------------------------------------
@@ -664,9 +686,6 @@ START_TWO_PLAYER PROC
                                      CALL  Draw_Bricks
                                      CALL  Draw_Ball_Right
                                      CALL  Draw_Ball_Left
-
-                                     NEG   Ball_Velocity_X1
-                                     NEG   Ball_Velocity_X2
 
 
 
@@ -714,6 +733,10 @@ START_TWO_PLAYER PROC
                                      PUSH  CX
                                      PUSH  DX
                                      CALL  INPUT_TWO_PLAYER
+
+                                     CMP   ESCSTATUS, 0
+                                     JNE   EXIT_MODE_TWO_PLAYER
+
                                      POP   DX
                                      POP   CX
                                      POP   BX
@@ -738,18 +761,15 @@ START_TWO_PLAYER PROC
                                      POP   DX
 
                                      JMP   Check_Time_Label_Two_Player
-   
-
-    ; INPUT_TEST:
-    ;                                  CALL  INPUT_TWO_PLAYER
 
 
-    ;                                  JMP   INPUT_TEST
+    EXIT_MODE_TWO_PLAYER:            
+    ; RESTORE VIDEO MODE
+                                     MOV   AH, 0
+                                     MOV   AL, 3
+                                     INT   10H
 
-
-
-    ;                                  MOV   AH, 00H
-    ;                                  INT   16H
+                                     CALL  MAIN
 
                                      RET
 START_TWO_PLAYER ENDP
@@ -1061,7 +1081,7 @@ Draw_Score_Container PROC
                                      ret
 Draw_Score_Container ENDP
 
-;---------------------------------------------------------------------------------------------------------------------------
+    ;---------------------------------------------------------------------------------------------------------------------------
 
 Draw_Score_Container_right PROC
 
@@ -1080,20 +1100,20 @@ Draw_Score_Container_right PROC
                                      mov   cx, 5                                   ; Length of the vertical line
                                      mov   al, 2                                   ; Pixel color (e.g., 2)
 
-    verLineR:                         
+    verLineR:                        
                                      stosb                                         ; Write AL (color) to memory at DI
                                      mov   di, dx                                  ; Restore DI to the starting position
                                      add   di, 320                                 ; Move to the next row (320 bytes down)
                                      mov   dx, di                                  ; Save new starting position for the next iteration
                                      dec   cx                                      ; Decrement the line counter
-                                     jnz   verLineR                                 ; Repeat until CX = 0
+                                     jnz   verLineR                                ; Repeat until CX = 0
 
-                                     mov   di, 636                               ; Starting position in video memory (DI = 325)
+                                     mov   di, 636                                 ; Starting position in video memory (DI = 325)
                                      mov   dx, di                                  ; Save the initial position in DX
                                      mov   cx, 5                                   ; Length of the vertical line
                                      mov   al, 2                                   ; Pixel color (e.g., 2)
 
-    verLineR2:                        
+    verLineR2:                       
                                      stosb                                         ; Write AL (color) to memory at DI
                                      mov   di, dx                                  ; Restore DI to the starting position
                                      add   di, 320                                 ; Move to the next row (320 bytes down)
@@ -1121,6 +1141,24 @@ Draw_Score PROC
                                      ret
 
 Draw_Score ENDP
+
+    ;-----------------------------------------------------------------------------------------------------------------------------
+Draw_Score_right PROC
+                                     mov   al, 0Dh
+                                     mov   di, 930
+                                     add   di, SCORE_COUNT_PLAYER_2
+                                     mov   cx, 4
+                                     mov   dx, di
+    verLineR3:                       
+                                     stosb                                         ; Write AL (color) to memory at DI
+                                     mov   di, dx                                  ; Restore DI to the starting position
+                                     add   di, 320                                 ; Move to the next row (320 bytes down)
+                                     mov   dx, di                                  ; Save new starting position for the next iteration
+                                     dec   cx                                      ; Decrement the line counter
+                                     jnz   verLineR3
+                                     ret
+
+Draw_Score_right ENDP
 
     ;GRAPHICS FUNCTIONS-----------------------------------------------------------------------------------------------------
 Draw_Single_Rect proc
@@ -1806,20 +1844,20 @@ Bricks_Collision_Right PROC
     ; MOV   AL, 000
     ; MOV   DX,10
 
-    ;                                  PUSH  AX
-    ;                                  PUSH  BX
-    ;                                  PUSH  CX
-    ;                                  PUSH  DX
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
                         
     
-    ; ; CALL  Draw_Single_Rect
+    ; CALL  Draw_Single_Rect
 
-    ;                                  CALL  Draw_Score
+                                     CALL  Draw_Score_right
 
-    ;                                  POP   DX
-    ;                                  POP   CX
-    ;                                  POP   BX
-    ;                                  POP   AX
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
                         
 
     ;  CALL  DRAW_SCORE
@@ -1937,7 +1975,7 @@ Bricks_Collision_Left PROC
                                      POP   SI                                      ;After Draw single rect
 
                                      NEG   Ball_Velocity_X1
-                                     INC   SCORE_COUNT_PLAYER_1
+                                     INC   SCORE_COUNT
 
                                      PUSHF
                                      PUSH  AX
@@ -1953,20 +1991,20 @@ Bricks_Collision_Left PROC
     ; MOV   AL, 000
     ; MOV   DX,10
 
-    ;                                  PUSH  AX
-    ;                                  PUSH  BX
-    ;                                  PUSH  CX
-    ;                                  PUSH  DX
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
                         
     
-    ; ; CALL  Draw_Single_Rect
+    ; CALL  Draw_Single_Rect
 
-    ;                                  CALL  Draw_Score
+                                     CALL  Draw_Score
 
-    ;                                  POP   DX
-    ;                                  POP   CX
-    ;                                  POP   BX
-    ;                                  POP   AX
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
                         
 
     ;  CALL  DRAW_SCORE
