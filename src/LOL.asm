@@ -744,8 +744,8 @@ START_TWO_PLAYER PROC
                                      POP   AX
 
     ; Handle ball movement and collision
-                                     CMP   START_PLAYING, 0
-                                     JE    Check_Time_Label_Two_Player
+                                    ;  CMP   START_PLAYING, 0
+                                    ;  JE    Check_Time_Label_Two_Player
 
                                      CALL  Draw_Black_Ball_Right
                                      CALL  Move_Ball_Two_Player_Left
@@ -806,9 +806,26 @@ INIT_PORT ENDP
 INPUT_TWO_PLAYER PROC
 
     ; SERIAL PART --------------------------########################################--------------------------------
-                                     MOV   PLAYER_INPUT, 0
-
                                      CALL  INIT_PORT
+    ;SENDING BALL_LIFT COORDINATE
+                                     mov   dx, 3FDh                                ; Line Status Register
+                                     in    al, dx                                  ; Read Line Status
+                                     and   al, 00100000b
+                                     jz    SEND_TWO_PLAYER
+                                     MOV   dx, 3F8h                                ; Transmit Data Register
+                                     mov   al, 50
+                                     out   dx, al
+
+
+                                     mov   dx, 3FDh                                ; Line Status Register
+                                     in    al, dx                                  ; Read Line Status
+                                     and   al, 00100000b
+                                     jz    SEND_TWO_PLAYER
+                                     MOV   dx, 3F8h                                ; Transmit Data Register
+                                     mov   al, 50
+                                     out   dx, al
+
+                                     MOV   PLAYER_INPUT, 0
     ; Check if key is pressed
                                      mov   ah, 01h
                                      int   16h
@@ -855,6 +872,18 @@ INPUT_TWO_PLAYER PROC
                                      jmp   START_INPUT
 
     CHECK_UART_TWO_PLAYER:           
+    ; Data is ready, read it
+                                     mov   dx, 3F8h                                ; Receive Data Register
+                                     in    al, dx
+                                     MOV   AH, 00
+                                     mov   Ball_Y_Left, AX
+
+    ; Data is ready, read it
+                                     mov   dx, 3F8h                                ; Receive Data Register
+                                     in    al, dx
+                                     MOV   AH, 0
+                                     mov   Ball_X_Left, AX
+
     ; ; Check if data is ready to be received from UART
                                      mov   dx, 3FDh                                ; Line Status Register
                                      in    al, dx
