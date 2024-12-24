@@ -69,6 +69,9 @@
 
     SCORE_COUNT_PLAYER_1 DW  0
     SCORE_COUNT_PLAYER_2 DW  0
+    LIVES_COUNT_PLAYER_1 DB  3
+    LIVES_COUNT_PLAYER_2 DB  3
+    
 
     FRAME_DELAY          EQU 64
 
@@ -119,6 +122,8 @@ MAIN proc far
 
                                      MOV   ESCSTATUS, 0
                                      MOV   LIVES_COUNT, 3
+                                     MOV   LIVES_COUNT_PLAYER_1, 3
+                                     MOV   LIVES_COUNT_PLAYER_2, 3
     ;INTIALIZE BALL  POSITION AND ITS VELOCITY
                                      MOV   Ball_X, 160
                                      MOV   Ball_Y, 158
@@ -642,6 +647,8 @@ START_TWO_PLAYER PROC
 
                                      call  Draw_Score_Container
                                      call  Draw_Score_Container_right
+                                     CALL  DRAW_LIVES
+                                     CALL  Draw_Lives_Right
 
 
     ; INITIALIZATIONS
@@ -742,6 +749,10 @@ START_TWO_PLAYER PROC
 
                                      CMP   ESCSTATUS, 0
                                      JNE   EXIT_MODE_TWO_PLAYER
+                                     CMP   LIVES_COUNT, 0
+                                     JE    EXIT_MODE_TWO_PLAYER
+                                     CMP   LIVES_COUNT_PLAYER_2, 0
+                                     JE    EXIT_MODE_TWO_PLAYER
 
                                      POP   DX
                                      POP   CX
@@ -1148,11 +1159,29 @@ Draw_Score PROC
 
 Draw_Score ENDP
 
+    ;-----------------------------------------------------------------------------------------------------------------------------
+Draw_Score_right PROC
+                                     mov   al, 0Dh
+                                     mov   di, 930
+                                     add   di, SCORE_COUNT_PLAYER_2
+                                     mov   cx, 4
+                                     mov   dx, di
+    verLineR3:                       
+                                     stosb                                         ; Write AL (color) to memory at DI
+                                     mov   di, dx                                  ; Restore DI to the starting position
+                                     add   di, 320                                 ; Move to the next row (320 bytes down)
+                                     mov   dx, di                                  ; Save new starting position for the next iteration
+                                     dec   cx                                      ; Decrement the line counter
+                                     jnz   verLineR3
+                                     ret
+
+Draw_Score_right ENDP
+
 Draw_Lives PROC
 
 
                                      MOV   AL, 0
-                                     MOV   DI, 720
+                                     MOV   DI, 700
                                      XOR   CX,CX
                                      MOV   CL, 3
     ERASE_LIVES_LOOP:                
@@ -1168,7 +1197,7 @@ Draw_Lives PROC
                                      
 
                                      MOV   AL, 4
-                                     MOV   DI, 720
+                                     MOV   DI, 700
                                      XOR   CX,CX
                                      MOV   CL, LIVES_COUNT
                                      CMP   CL, 0
@@ -1189,23 +1218,46 @@ Draw_Lives PROC
 
 Draw_Lives ENDP
 
-    ;-----------------------------------------------------------------------------------------------------------------------------
-Draw_Score_right PROC
-                                     mov   al, 0Dh
-                                     mov   di, 930
-                                     add   di, SCORE_COUNT_PLAYER_2
-                                     mov   cx, 4
-                                     mov   dx, di
-    verLineR3:                       
-                                     stosb                                         ; Write AL (color) to memory at DI
-                                     mov   di, dx                                  ; Restore DI to the starting position
-                                     add   di, 320                                 ; Move to the next row (320 bytes down)
-                                     mov   dx, di                                  ; Save new starting position for the next iteration
-                                     dec   cx                                      ; Decrement the line counter
-                                     jnz   verLineR3
-                                     ret
+Draw_Lives_Right PROC
 
-Draw_Score_right ENDP
+
+                                     MOV   AL, 0
+                                     MOV   DI, 876
+                                     XOR   CX,CX
+                                     MOV   CL, 3
+    ERASE_LIVES_LOOP_RIGHT:          
+                                     PUSH  CX
+                                     PUSH  DI
+                                     MOV   DX, 4
+                                     MOV   SI, 8
+                                     CALL  Draw_Single_Rect
+                                     POP   DI
+                                     ADD   DI,10
+                                     POP   CX
+                                     LOOP  ERASE_LIVES_LOOP_RIGHT
+                                     
+
+                                     MOV   AL, 4
+                                     MOV   DI, 876
+                                     XOR   CX,CX
+                                     MOV   CL, LIVES_COUNT_PLAYER_2
+                                     CMP   CL, 0
+                                     JE    END_DRAW_LIVES_RIGHT
+
+    DRAW_LIVES_LOOP_RIGHT:           
+                                     PUSH  CX
+                                     PUSH  DI
+                                     MOV   DX, 4
+                                     MOV   SI, 8
+                                     CALL  Draw_Single_Rect
+                                     POP   DI
+                                     ADD   DI,10
+                                     POP   CX
+                                     LOOP  DRAW_LIVES_LOOP_RIGHT
+    END_DRAW_LIVES_RIGHT:            
+                                     RET
+
+Draw_Lives_Right ENDP
 
     ;GRAPHICS FUNCTIONS-----------------------------------------------------------------------------------------------------
 Draw_Single_Rect proc
@@ -1585,6 +1637,7 @@ Move_Ball PROC
                                      MOV   AX, SCREEN_HEIGHT_CONST - 10
                                      CMP   Ball_X, AX
                                      JL    SKIP
+    ;  INC   ESCSTATUS
                                      DEC   LIVES_COUNT
 
                                      CALL  DRAW_LIVES
@@ -1608,6 +1661,10 @@ Move_Ball PROC
                                      MOV   Ball_Y, 158
                                      MOV   PADDLE_X, 180
                                      MOV   PADDLE_Y, 140
+                                     MOV   Ball_Velocity_X, 4
+                                     MOV   Ball_Velocity_Y, 4
+                                     NEG   Ball_Velocity_X
+                                     NEG   Ball_Velocity_Y
 
     ;Draw New paddle
                                      MOV   AX, PADDLE_X
@@ -1701,7 +1758,48 @@ Move_Ball_Two_Player_Left PROC
                                      MOV   AX, SCREEN_HEIGHT_CONST - 10            ;Compare wirh paddle to see if the ball is below it
                                      CMP   Ball_X_Right, AX
                                      JL    SKIP_Two_Player
-                                     INC   ESCSTATUS
+    ;  INC   ESCSTATUS
+                                     DEC   LIVES_COUNT
+
+                                     CALL  DRAW_LIVES
+
+    ;Erase paddle
+    ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
+                                     MOV   AX, PADDLE_X1
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PADDLE_Y1
+                                     MOV   DI, AX
+
+
+                                     MOV   DX, PADDLE_HEIGHT
+                                     mov   si, PADDLE_WIDTH
+                                     MOV   AL, 0
+                                     CALL  Draw_Single_Rect
+
+    ;Reset paddle and ball positions
+                                     MOV   Ball_X_Right, 120
+                                     MOV   Ball_Y_RIGHT, 140
+                                     MOV   PADDLE_X1, 180
+                                     MOV   PADDLE_Y1, 60
+                                     MOV   Ball_Velocity_X1, 4
+                                     MOV   Ball_Velocity_Y1, 4
+                                     NEG   Ball_Velocity_X1
+                                     NEG   Ball_Velocity_Y1
+
+    ;Draw New paddle
+                                     MOV   AX, PADDLE_X1
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PADDLE_Y1
+                                     MOV   DI, AX
+
+
+                                     MOV   DX, PADDLE_HEIGHT
+                                     mov   si, PADDLE_WIDTH
+                                     MOV   AL, PADDLE_COLOR
+                                     CALL  Draw_Single_Rect
+                                     JMP   STOP_Two_Player
     SKIP_Two_Player:                 
        
                                      MOV   AX,Ball_Velocity_X1
@@ -1786,7 +1884,50 @@ Move_Ball_Two_Player_Right PROC
                                      MOV   AX, SCREEN_HEIGHT_CONST - 10            ;Compare wirh paddle to see if the ball is below it
                                      CMP   Ball_X_Left, AX
                                      JL    SKIP_Two_Player2
-                                     INC   ESCSTATUS
+    ;  INC   ESCSTATUS
+
+                                     DEC   LIVES_COUNT_PLAYER_2
+
+                                     CALL  Draw_Lives_Right
+
+    ;Erase paddle
+    ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
+                                     MOV   AX, PADDLE_X2
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PADDLE_Y2
+                                     MOV   DI, AX
+
+
+                                     MOV   DX, PADDLE_HEIGHT
+                                     mov   si, PADDLE_WIDTH
+                                     MOV   AL, 0
+                                     CALL  Draw_Single_Rect
+
+    ;Reset paddle and ball positions
+                                     MOV   Ball_X_Left, 160
+                                     MOV   Ball_Y_Left, 170
+                                     MOV   PADDLE_X2, 180
+                                     MOV   PADDLE_Y2, 225
+                                     MOV   Ball_Velocity_X2,4
+                                     MOV   Ball_Velocity_Y2,4
+                                     NEG   Ball_Velocity_X2
+                                     NEG   Ball_Velocity_Y2
+
+    ;Draw New paddle
+                                     MOV   AX, PADDLE_X2
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PADDLE_Y2
+                                     MOV   DI, AX
+
+
+                                     MOV   DX, PADDLE_HEIGHT
+                                     mov   si, PADDLE_WIDTH
+                                     MOV   AL, PADDLE_COLOR
+                                     CALL  Draw_Single_Rect
+                                     JMP   STOP_Two_Player2
+
     SKIP_Two_Player2:                
        
                                      MOV   AX,Ball_Velocity_X2
