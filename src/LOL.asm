@@ -777,6 +777,8 @@ START_ONE_PLAYER ENDP
 
 START_TWO_PLAYER PROC
 
+                                     MOV   SCORE_COUNT, 0
+                                     MOV   SCORE_COUNT_PLAYER_2, 0
     ; INITIALIZE DATA SEGMENT
                                      MOV   AX, @DATA
                                      MOV   DS, AX
@@ -903,6 +905,11 @@ START_TWO_PLAYER PROC
                                      MOV   Prev_Time, DL
 
     ; Handle user input
+                                     CMP   SCORE_COUNT, 12
+                                     JE    EXIT_MODE_TWO_PLAYER
+                                     CMP   SCORE_COUNT_PLAYER_2, 12
+                                     JE    EXIT_MODE_TWO_PLAYER
+
                                      PUSH  AX
                                      PUSH  BX
                                      PUSH  CX
@@ -952,6 +959,48 @@ START_TWO_PLAYER PROC
                                      MOV   AL, 3
                                      INT   10H
 
+    ; MOVE CURSOR TO CENTER
+                                     mov   ah, 02h
+                                     mov   bh, 0
+                                     mov   dh, 12
+                                     mov   dl, 20
+                                     int   10h
+
+                                     CMP   SCORE_COUNT, 12
+                                     JE    WIN_TWO
+                                     CMP   SCORE_COUNT_PLAYER_2, 12
+                                     JE    LOSE_TWO
+
+                                     MOV   BL, LIVES_COUNT
+                                     CMP   BL, LIVES_COUNT_PLAYER_2
+                                     JG    WIN_TWO
+                                     JL    LOSE_TWO
+
+                                     MOV   BL, LIVES_COUNT
+                                     CMP   BL, LIVES_COUNT_PLAYER_2
+                                     JG    WIN_TWO
+                                     JL    LOSE_TWO
+                                     JE    NO2
+                                     
+    ; Display the win message
+    WIN_TWO:                         
+                                     MOV   AH, 09H
+                                     LEA   DX, WINSTRING
+                                     INT   21H
+                                     JMP   NO2
+    LOSE_TWO:                        
+                                     MOV   AH, 09H
+                                     LEA   DX, LOSESTRING
+                                     INT   21H
+
+    NO2:                             
+    ; WAIT 2 SECONDS
+                                     MOV   AH, 86H                                 ; Set function number for delay
+                                     MOV   CX, 30                                  ; High-order word of the delay
+                                     MOV   DX, 19456                               ; Low-order word of the delay
+                                     INT   15H                                     ; Call BIOS to execute the delay
+
+
                                      CALL  MAIN
 
                                      RET
@@ -960,6 +1009,7 @@ START_TWO_PLAYER ENDP
 START_PING_PONG PROC
 
                                      MOV   SCORE_COUNT, 0
+                                     MOV   SCORE_COUNT_PLAYER_2, 0
 
 
     ; CALC SCREEN SIZE AND STORE IT
@@ -1030,6 +1080,11 @@ START_PING_PONG PROC
                                      MOV   Prev_Time, DL
 
     ; Handle user input
+                                     CMP   SCORE_COUNT, 5
+                                     JE    EXITYY
+                                     CMP   SCORE_COUNT_PLAYER_2, 5
+                                     JE    EXITYY
+
                                      PUSH  AX
                                      PUSH  BX
                                      PUSH  CX
@@ -1054,9 +1109,47 @@ START_PING_PONG PROC
                                      JMP   Check_Time_Label_PONG
 
     EXITYY:                          
+    ; RESTORE VIDEO MODE
                                      MOV   AH, 0
                                      MOV   AL, 3
                                      INT   10H
+
+    ; MOVE CURSOR TO CENTER
+                                     mov   ah, 02h
+                                     mov   bh, 0
+                                     mov   dh, 12
+                                     mov   dl, 20
+                                     int   10h
+
+                                     CMP   SCORE_COUNT, 5
+                                     JE    WIN_TWOP
+                                     CMP   SCORE_COUNT_PLAYER_2, 5
+                                     JE    LOSE_TWOP
+
+                                     MOV   BX, SCORE_COUNT
+                                     CMP   BX, SCORE_COUNT_PLAYER_2
+                                     JG    WIN_TWOP
+                                     JL    LOSE_TWOP
+                                     
+    ; Display the win message
+    WIN_TWOP:                        
+                                     MOV   AH, 09H
+                                     LEA   DX, WINSTRING
+                                     INT   21H
+                                     JMP   NO2
+    LOSE_TWOP:                       
+                                     MOV   AH, 09H
+                                     LEA   DX, LOSESTRING
+                                     INT   21H
+
+    NO2P:                            
+    ; WAIT 2 SECONDS
+                                     MOV   AH, 86H                                 ; Set function number for delay
+                                     MOV   CX, 30                                  ; High-order word of the delay
+                                     MOV   DX, 19456                               ; Low-order word of the delay
+                                     INT   15H                                     ; Call BIOS to execute the delay
+
+
 
                                      CALL  MAIN
 
@@ -1967,7 +2060,7 @@ Draw_Score ENDP
     ;-----------------------------------------------------------------------------------------------------------------------------
 Draw_Score_right PROC
                                      mov   al, 0Dh
-                                     mov   di, 930
+                                     mov   di, 940
                                      add   di, SCORE_COUNT_PLAYER_2
                                      mov   cx, 4
                                      mov   dx, di
