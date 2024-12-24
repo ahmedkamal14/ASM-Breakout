@@ -539,6 +539,12 @@ START_CHAT ENDP
     ; ONE PLAYER PROC---------------------------------------------------------------------------------------------------
 START_ONE_PLAYER PROC
 
+                                     MOV   Paddle_X, 180
+                                     MOV   PADDLE_Y, 140
+
+                                     MOV   Ball_X, 160
+                                     MOV   Ball_Y, 158
+
     ; CALC SCREEN SIZE AND STORE IT
                                      MOV   AX, SCREEN_WIDTH
                                      MUL   SCREEN_HEIGHT
@@ -778,6 +784,18 @@ START_ONE_PLAYER PROC
 START_ONE_PLAYER ENDP
 
 START_TWO_PLAYER PROC
+
+
+                                     MOV   PADDLE_X1, 180
+                                     MOV   PADDLE_Y1, 60
+                                     MOV   PADDLE_X2, 180
+                                     MOV   PADDLE_Y2, 221
+
+                                     MOV   Ball_X_Left, 165
+                                     MOV   Ball_Y_Left, 239
+                                     MOV   Ball_X_Right, 165
+                                     MOV   Ball_Y_Right, 78
+
 
                                      MOV   SCORE_COUNT, 0
                                      MOV   SCORE_COUNT_PLAYER_2, 0
@@ -2542,8 +2560,8 @@ Move_Ball PROC
                                      JL    SKIP
     ;  INC   ESCSTATUS
                                      DEC   LIVES_COUNT
-                                     MOV Ball_Velocity_X, 4
-                                     MOV Ball_Velocity_Y, 4
+                                     MOV   Ball_Velocity_X, 4
+                                     MOV   Ball_Velocity_Y, 4
 
                                      CALL  DRAW_LIVES
 
