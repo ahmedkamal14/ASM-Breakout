@@ -2546,7 +2546,7 @@ Move_Ball_Two_Player_Left PROC
 
                                      CMP   Ball_Y_Right,0                          ;Right edge of our screen
                                      JLE   Neg_Velocity_Y_Two_Player
-                                     MOV   AX,  BORDER_MIDDLE - 4                  ;Middle of sreen: BORDER_MIDDLE - 3
+                                     MOV   AX,  BORDER_MIDDLE - 6                  ;Middle of sreen: BORDER_MIDDLE - 3
                                      CMP   Ball_Y_Right,AX
                                      JG    Neg_Velocity_Y_Two_Player
 
@@ -2672,7 +2672,7 @@ Move_Ball_Two_Player_Right PROC
 
 
 
-                                     CMP   Ball_Y_Left,BORDER_MIDDLE+2             ;COMPARE WITH MIDDLE OF THE SCREEN
+                                     CMP   Ball_Y_Left,BORDER_MIDDLE+4             ;COMPARE WITH MIDDLE OF THE SCREEN
                                      JL    Neg_Velocity_Y_Two_Player2
                                      MOV   AX, 316                                 ;COMPARE WITH THE RIGHT OF THE SCREEN
                                      CMP   Ball_Y_Left,AX
