@@ -7,7 +7,7 @@
     PADDLE_WIDTH         DW  40
     PADDLE_HEIGHT        DW  6
     PADDLE_COLOR         DB  3
-    PADDLE_SPEED         DW  2
+    PADDLE_SPEED         DW  4
 
     ; SCREEN INFO
     SCREEN_WIDTH         DW  320
@@ -37,8 +37,8 @@
     Ball_X_Left          DW  165
     Ball_Y_Left          DW  239
     Ball_Size            DW  2                                                         ;I=0;I<=2 , HENCE IT IS 3 PIXELS WIDE
-    Ball_Velocity_X      DW  2
-    Ball_Velocity_Y      DW  2
+    Ball_Velocity_X      DW  4
+    Ball_Velocity_Y      DW  4
     Prev_Time            DB  0
     BALL_COLOR           DB  0
 
@@ -96,6 +96,9 @@
     SendingString        DB  10, 13,'Sending: ', '$'
     sendFLAG             DB  0
     recFLAG              DB  0
+
+    WINSTRING            DB  'YOU WIN', 0Ah, 0Dh, '$'
+    LOSESTRING           DB  'YOU LOSE', 0Ah, 0Dh, '$'
 
     ; ESCAPE STATUS
     ESCSTATUS            DB  0
@@ -477,16 +480,17 @@ START_CHAT PROC
     ; Data is ready, read it
                                      mov   dx, 3F8h                                ; Receive Data Register
                                      in    al, dx
+                                     MOV   AH, AL
                                      mov   receivedValue, al
                                      mov   receivedValue+1, '$'                    ; Null-terminate the string for display
+
+    ; IF ENTER IS PRESSED DISPLAY NEW LINE AND RESET FLAGS
+                                     cmp   AH, 0Dh
+                                     je    ENTERPRESSED
 
     ; Exit if received value is ESC
                                      cmp   al, 1Bh
                                      je    EXIT
-
-    ; IF ENTER IS PRESSED DISPLAY NEW LINE AND RESET FLAGS
-                                     cmp   AL, 0Dh
-                                     je    ENTERPRESSED
 
     ; Display the received value
                                      mov   ah, 09h
@@ -631,6 +635,12 @@ START_ONE_PLAYER PROC
                                      MOV   Prev_Time, DL
 
     ; Handle user input
+
+
+                                     CMP   SCORE_COUNT, 24
+                                     JNE   KMELYA3M
+                                     JMP   EXIT_MODE
+    KMELYA3M:                        
                                      PUSH  AX
                                      PUSH  BX
                                      PUSH  CX
@@ -731,6 +741,35 @@ START_ONE_PLAYER PROC
                                      MOV   AL, 3
                                      INT   10H
 
+    ; MOVE CURSOR TO CENTER
+                                     mov   ah, 02h
+                                     mov   bh, 0
+                                     mov   dh, 12
+                                     mov   dl, 20
+                                     int   10h
+
+                                     CMP   SCORE_COUNT, 24
+                                     JNE   LOSE
+
+    ; Display the win message
+                                     MOV   AH, 09H
+                                     LEA   DX, WINSTRING
+                                     INT   21H
+                                     JMP   NO
+    LOSE:                            
+                                     MOV   AH, 09H
+                                     LEA   DX, LOSESTRING
+                                     INT   21H
+
+    NO:                              
+    ; WAIT 2 SECONDS
+                                     MOV   AH, 86H                                 ; Set function number for delay
+                                     MOV   CX, 30                                  ; High-order word of the delay
+                                     MOV   DX, 19456                               ; Low-order word of the delay
+                                     INT   15H                                     ; Call BIOS to execute the delay
+                                        
+                                        
+
     ; RETURN CONTROL TO OPERATING SYSTEM
     ; MOV   AH, 4CH
     ; INT   21H
@@ -739,6 +778,8 @@ START_ONE_PLAYER ENDP
 
 START_TWO_PLAYER PROC
 
+                                     MOV   SCORE_COUNT, 0
+                                     MOV   SCORE_COUNT_PLAYER_2, 0
     ; INITIALIZE DATA SEGMENT
                                      MOV   AX, @DATA
                                      MOV   DS, AX
@@ -769,7 +810,7 @@ START_TWO_PLAYER PROC
                                      call  Draw_Single_Rect
 
 
-                                     call  Draw_Score_Container
+                                     call  Draw_Score_Container_left
                                      call  Draw_Score_Container_right
                                      CALL  DRAW_LIVES
                                      CALL  Draw_Lives_Right
@@ -865,6 +906,11 @@ START_TWO_PLAYER PROC
                                      MOV   Prev_Time, DL
 
     ; Handle user input
+                                     CMP   SCORE_COUNT, 12
+                                     JE    EXIT_MODE_TWO_PLAYER
+                                     CMP   SCORE_COUNT_PLAYER_2, 12
+                                     JE    EXIT_MODE_TWO_PLAYER
+
                                      PUSH  AX
                                      PUSH  BX
                                      PUSH  CX
@@ -914,6 +960,48 @@ START_TWO_PLAYER PROC
                                      MOV   AL, 3
                                      INT   10H
 
+    ; MOVE CURSOR TO CENTER
+                                     mov   ah, 02h
+                                     mov   bh, 0
+                                     mov   dh, 12
+                                     mov   dl, 20
+                                     int   10h
+
+                                     CMP   SCORE_COUNT, 12
+                                     JE    WIN_TWO
+                                     CMP   SCORE_COUNT_PLAYER_2, 12
+                                     JE    LOSE_TWO
+
+                                     MOV   BL, LIVES_COUNT
+                                     CMP   BL, LIVES_COUNT_PLAYER_2
+                                     JG    WIN_TWO
+                                     JL    LOSE_TWO
+
+                                     MOV   BL, LIVES_COUNT
+                                     CMP   BL, LIVES_COUNT_PLAYER_2
+                                     JG    WIN_TWO
+                                     JL    LOSE_TWO
+                                     JE    NO2
+                                     
+    ; Display the win message
+    WIN_TWO:                         
+                                     MOV   AH, 09H
+                                     LEA   DX, WINSTRING
+                                     INT   21H
+                                     JMP   NO2
+    LOSE_TWO:                        
+                                     MOV   AH, 09H
+                                     LEA   DX, LOSESTRING
+                                     INT   21H
+
+    NO2:                             
+    ; WAIT 2 SECONDS
+                                     MOV   AH, 86H                                 ; Set function number for delay
+                                     MOV   CX, 30                                  ; High-order word of the delay
+                                     MOV   DX, 19456                               ; Low-order word of the delay
+                                     INT   15H                                     ; Call BIOS to execute the delay
+
+
                                      CALL  MAIN
 
                                      RET
@@ -922,6 +1010,7 @@ START_TWO_PLAYER ENDP
 START_PING_PONG PROC
 
                                      MOV   SCORE_COUNT, 0
+                                     MOV   SCORE_COUNT_PLAYER_2, 0
 
 
     ; CALC SCREEN SIZE AND STORE IT
@@ -943,7 +1032,7 @@ START_PING_PONG PROC
                                      INT   10H
 
     ;DRAW SCORE CONTAINER
-                                     call  Draw_Score_Container
+                                     call  Draw_Score_Container_left
                                      call  Draw_Score_Container_right
 
     ; DRAW LEFT PADDLE
@@ -992,6 +1081,11 @@ START_PING_PONG PROC
                                      MOV   Prev_Time, DL
 
     ; Handle user input
+                                     CMP   SCORE_COUNT, 5
+                                     JE    EXITYY
+                                     CMP   SCORE_COUNT_PLAYER_2, 5
+                                     JE    EXITYY
+
                                      PUSH  AX
                                      PUSH  BX
                                      PUSH  CX
@@ -1016,9 +1110,47 @@ START_PING_PONG PROC
                                      JMP   Check_Time_Label_PONG
 
     EXITYY:                          
+    ; RESTORE VIDEO MODE
                                      MOV   AH, 0
                                      MOV   AL, 3
                                      INT   10H
+
+    ; MOVE CURSOR TO CENTER
+                                     mov   ah, 02h
+                                     mov   bh, 0
+                                     mov   dh, 12
+                                     mov   dl, 20
+                                     int   10h
+
+                                     CMP   SCORE_COUNT, 5
+                                     JE    WIN_TWOP
+                                     CMP   SCORE_COUNT_PLAYER_2, 5
+                                     JE    LOSE_TWOP
+
+                                     MOV   BX, SCORE_COUNT
+                                     CMP   BX, SCORE_COUNT_PLAYER_2
+                                     JG    WIN_TWOP
+                                     JL    LOSE_TWOP
+                                     
+    ; Display the win message
+    WIN_TWOP:                        
+                                     MOV   AH, 09H
+                                     LEA   DX, WINSTRING
+                                     INT   21H
+                                     JMP   NO2
+    LOSE_TWOP:                       
+                                     MOV   AH, 09H
+                                     LEA   DX, LOSESTRING
+                                     INT   21H
+
+    NO2P:                            
+    ; WAIT 2 SECONDS
+                                     MOV   AH, 86H                                 ; Set function number for delay
+                                     MOV   CX, 30                                  ; High-order word of the delay
+                                     MOV   DX, 19456                               ; Low-order word of the delay
+                                     INT   15H                                     ; Call BIOS to execute the delay
+
+
 
                                      CALL  MAIN
 
@@ -1828,16 +1960,16 @@ Draw_Score_Container ENDP
 Draw_Score_Container_right PROC
 
                                      mov   al, 2
-                                     mov   di, 610
-                                     mov   cx, 26d
+                                     mov   di, 620
+                                     mov   cx, 13d
                                      rep   stosb
 
                                      mov   al, 2
-                                     mov   di, 2210
-                                     mov   cx, 26d
+                                     mov   di, 2220
+                                     mov   cx, 13d
                                      rep   stosb
 
-                                     mov   di, 610                                 ; Starting position in video memory (DI = 325)
+                                     mov   di, 620                                 ; Starting position in video memory (DI = 325)
                                      mov   dx, di                                  ; Save the initial position in DX
                                      mov   cx, 5                                   ; Length of the vertical line
                                      mov   al, 2                                   ; Pixel color (e.g., 2)
@@ -1850,7 +1982,7 @@ Draw_Score_Container_right PROC
                                      dec   cx                                      ; Decrement the line counter
                                      jnz   verLineR                                ; Repeat until CX = 0
 
-                                     mov   di, 636                                 ; Starting position in video memory (DI = 325)
+                                     mov   di, 633                                 ; Starting position in video memory (DI = 325)
                                      mov   dx, di                                  ; Save the initial position in DX
                                      mov   cx, 5                                   ; Length of the vertical line
                                      mov   al, 2                                   ; Pixel color (e.g., 2)
@@ -1864,6 +1996,48 @@ Draw_Score_Container_right PROC
                                      jnz   verLineR2
                                      ret
 Draw_Score_Container_right ENDP
+
+    ;---------------------------------------------------------------------------------------------------------------------------
+
+Draw_Score_Container_left PROC
+
+                                     mov   al, 2
+                                     mov   di, 325
+                                     mov   cx, 13d
+                                     rep   stosb
+
+                                     mov   al, 2
+                                     mov   di, 1925
+                                     mov   cx, 13d
+                                     rep   stosb
+
+                                     mov   di, 325                                 ; Starting position in video memory (DI = 325)
+                                     mov   dx, di                                  ; Save the initial position in DX
+                                     mov   cx, 5                                   ; Length of the vertical line
+                                     mov   al, 2                                   ; Pixel color (e.g., 2)
+
+    verLineL:                        
+                                     stosb                                         ; Write AL (color) to memory at DI
+                                     mov   di, dx                                  ; Restore DI to the starting position
+                                     add   di, 320                                 ; Move to the next row (320 bytes down)
+                                     mov   dx, di                                  ; Save new starting position for the next iteration
+                                     dec   cx                                      ; Decrement the line counter
+                                     jnz   verLineL                                ; Repeat until CX = 0
+
+                                     mov   di, 338                                 ; Starting position in video memory (DI = 325)
+                                     mov   dx, di                                  ; Save the initial position in DX
+                                     mov   cx, 5                                   ; Length of the vertical line
+                                     mov   al, 2                                   ; Pixel color (e.g., 2)
+
+    verLineL2:                       
+                                     stosb                                         ; Write AL (color) to memory at DI
+                                     mov   di, dx                                  ; Restore DI to the starting position
+                                     add   di, 320                                 ; Move to the next row (320 bytes down)
+                                     mov   dx, di                                  ; Save new starting position for the next iteration
+                                     dec   cx                                      ; Decrement the line counter
+                                     jnz   verLineL2
+                                     ret
+Draw_Score_Container_left ENDP
 
 
     ;DRAWSCORE PROGRESS-----------------------------------------------------------------------------------------------------
@@ -1887,7 +2061,7 @@ Draw_Score ENDP
     ;-----------------------------------------------------------------------------------------------------------------------------
 Draw_Score_right PROC
                                      mov   al, 0Dh
-                                     mov   di, 930
+                                     mov   di, 940
                                      add   di, SCORE_COUNT_PLAYER_2
                                      mov   cx, 4
                                      mov   dx, di
@@ -3092,7 +3266,9 @@ Bricks_Collision PROC
                                      MOV   DX, AX
                                      ADD   DX, Brick_Height
                                      CMP   Ball_X, DX
-                                     JNL   No_Collision
+                                     JL    KK
+                                     JMP   No_Collision
+    KK:                              
 
 
                                      MOV   DX,Ball_Y
@@ -3140,7 +3316,9 @@ Bricks_Collision PROC
                                      MOV   GIFT_STATUS, 1D
                                      MOV   GIFT_TIME, 3D
                                      INC   PADDLE_COLOR
-                                     ADD   PADDLE_WIDTH, 4D
+                                     ADD   PADDLE_SPEED, 1D
+                                     INC   Ball_Velocity_X
+
 
     NEVER_MIND:                      
                                      DEC   GIFT_TIME
@@ -3301,5 +3479,4 @@ START_COLLISION_SOUND PROC
 START_COLLISION_SOUND ENDP
 
     ;---------------------------------------------------------------------------------------------------------------
-
 END MAIN
