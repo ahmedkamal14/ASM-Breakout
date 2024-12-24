@@ -1661,11 +1661,10 @@ PLAYER_1_CLEAR_PADDLE PROC
                                      MOV   AX, PADDLE_X1
                                      MOV   DX, 320
                                      MUL   DX
-                                     ADD   AX, 0
                                      MOV   DI, AX
 
                                      MOV   DX, PADDLE_HEIGHT
-                                     mov   si, 160
+                                     mov   si, 159
 
                                      MOV   AL, 0
                           
@@ -1678,11 +1677,11 @@ PLAYER_2_CLEAR_PADDLE PROC
                                      MOV   AX, PADDLE_X2
                                      MOV   DX, 320
                                      MUL   DX
-                                     ADD   AX, 163
+                                     ADD   AX, 161
                                      MOV   DI, AX
 
                                      MOV   DX, PADDLE_HEIGHT
-                                     mov   si, 156
+                                     mov   si, 159
 
                                      MOV   AL, 0
                           
