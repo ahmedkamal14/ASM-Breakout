@@ -22,6 +22,7 @@
     BORDER_RIGHT         DW  ?                                                         ; SCREEN_WIDTH - PADDLE_WIDTH
     BORDER_TOP           DW  0
     BORDER_BOTTOM        DW  SCREEN_HEIGHT - PADDLE_HEIGHT
+
     BORDER_MIDDLE        EQU 159
 
     ; NEEDED COLORS
@@ -31,10 +32,10 @@
     ; BALL DATA
     Ball_X               DW  160
     Ball_Y               DW  158
-    Ball_X_Right         DW  120
-    Ball_Y_Right         DW  140
-    Ball_X_Left          DW  160
-    Ball_Y_Left          DW  170
+    Ball_X_Right         DW  165
+    Ball_Y_Right         DW  78
+    Ball_X_Left          DW  165
+    Ball_Y_Left          DW  239
     Ball_Size            DW  3
     Ball_Velocity_X      DW  2
     Ball_Velocity_Y      DW  2
@@ -886,14 +887,14 @@ START_TWO_PLAYER PROC
                                      CMP   START_PLAYING, 0
                                      JE    Check_Time_Label_Two_Player
 
+                                     CALL  Draw_Black_Ball_Left
+                                     CALL  Move_Ball_Two_Player_Right
+                                     CALL  Draw_Ball_Left
                              
                                      CALL  Draw_Black_Ball_Right
                                      CALL  Move_Ball_Two_Player_Left
                                      CALL  Draw_Ball_Right
 
-                                     CALL  Draw_Black_Ball_Left
-                                     CALL  Move_Ball_Two_Player_Right
-                                     CALL  Draw_Ball_Left
 
     ; Update the paddle position
                                      PUSH  DX
@@ -2508,6 +2509,7 @@ Move_Ball_Two_Player_Left PROC
                                      MOV   PADDLE_Y1, 60
                                      MOV   Ball_Velocity_X1, 2
                                      MOV   Ball_Velocity_Y1, 2
+
                                      NEG   Ball_Velocity_X1
                                      NEG   Ball_Velocity_Y1
 
@@ -2544,7 +2546,7 @@ Move_Ball_Two_Player_Left PROC
 
                                      CMP   Ball_Y_Right,0                          ;Right edge of our screen
                                      JLE   Neg_Velocity_Y_Two_Player
-                                     MOV   AX,BORDER_MIDDLE - 6                    ;Middle of sreen
+                                     MOV   AX,  BORDER_MIDDLE - 4                  ;Middle of sreen: BORDER_MIDDLE - 3
                                      CMP   Ball_Y_Right,AX
                                      JG    Neg_Velocity_Y_Two_Player
 
@@ -2670,9 +2672,9 @@ Move_Ball_Two_Player_Right PROC
 
 
 
-                                     CMP   Ball_Y_Left,BORDER_MIDDLE + 4           ;COMPARE WITH MIDDLE OF THE SCREEN
+                                     CMP   Ball_Y_Left,BORDER_MIDDLE+2             ;COMPARE WITH MIDDLE OF THE SCREEN
                                      JL    Neg_Velocity_Y_Two_Player2
-                                     MOV   AX, 318                                 ;COMPARE WITH THE RIGHT OF THE SCREEN
+                                     MOV   AX, 316                                 ;COMPARE WITH THE RIGHT OF THE SCREEN
                                      CMP   Ball_Y_Left,AX
                                      JGE   Neg_Velocity_Y_Two_Player2
 
