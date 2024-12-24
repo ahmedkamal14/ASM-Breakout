@@ -139,6 +139,7 @@
 
     PING_PADDLE_WIDTH    DW  6
     PING_PADDLE_HEIGHT   DW  40
+    PING_PADDLE_HEIGHT2  DW  40
 
     PING_PADDLE_SPEED    DW  5
 
@@ -147,7 +148,7 @@
     ; PONG BALL DATA
     PONG_BALL_X          DW  100
     PONG_BALL_Y          DW  158
-    PONG_BALL_SIZE       DW  3
+    PONG_BALL_SIZE       DW  4
     PONG_BALL_COLOR      DB  10
     PONG_BALL_SPEED_X    DW  2
     PONG_BALL_SPEED_Y    DW  6
@@ -988,11 +989,18 @@ START_TWO_PLAYER PROC
                                      MOV   AH, 09H
                                      LEA   DX, WINSTRING
                                      INT   21H
+                                     INC   PLAYER_LEFT_COLOR
+                                     ADD   PING_PADDLE_HEIGHT, 6D
                                      JMP   NO2
+
     LOSE_TWO:                        
                                      MOV   AH, 09H
                                      LEA   DX, LOSESTRING
                                      INT   21H
+                                     INC   PLAYER_RIGHT_COLOR
+                                     ADD   PING_PADDLE_HEIGHT2, 6D
+
+                                     
 
     NO2:                             
     ; WAIT 2 SECONDS
@@ -1000,11 +1008,8 @@ START_TWO_PLAYER PROC
                                      MOV   CX, 30                                  ; High-order word of the delay
                                      MOV   DX, 19456                               ; Low-order word of the delay
                                      INT   15H                                     ; Call BIOS to execute the delay
-
-
-                                     CALL  MAIN
-
-                                     RET
+                                     CALL  START_PING_PONG
+                                     
 START_TWO_PLAYER ENDP
 
 START_PING_PONG PROC
@@ -1055,7 +1060,7 @@ START_PING_PONG PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
 
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      MOV   SI, PING_PADDLE_WIDTH
 
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -1137,7 +1142,7 @@ START_PING_PONG PROC
                                      MOV   AH, 09H
                                      LEA   DX, WINSTRING
                                      INT   21H
-                                     JMP   NO2
+                                     JMP   NO2P
     LOSE_TWOP:                       
                                      MOV   AH, 09H
                                      LEA   DX, LOSESTRING
@@ -1149,7 +1154,6 @@ START_PING_PONG PROC
                                      MOV   CX, 30                                  ; High-order word of the delay
                                      MOV   DX, 19456                               ; Low-order word of the delay
                                      INT   15H                                     ; Call BIOS to execute the delay
-
 
 
                                      CALL  MAIN
@@ -1335,7 +1339,7 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_LEFT_Y
                                      MOV   DI, AX
 
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
 
                                      MOV   AL, PLAYER_LEFT_COLOR
@@ -1359,7 +1363,7 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
     
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
     
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -1383,7 +1387,7 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
     
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
     
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -2538,6 +2542,8 @@ Move_Ball PROC
                                      JL    SKIP
     ;  INC   ESCSTATUS
                                      DEC   LIVES_COUNT
+                                     MOV Ball_Velocity_X, 4
+                                     MOV Ball_Velocity_Y, 4
 
                                      CALL  DRAW_LIVES
 
