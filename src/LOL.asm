@@ -7,7 +7,7 @@
     PADDLE_WIDTH         DW  40
     PADDLE_HEIGHT        DW  6
     PADDLE_COLOR         DB  8
-    PADDLE_SPEED         DW  6
+    PADDLE_SPEED         DW  2
 
     ; SCREEN INFO
     SCREEN_WIDTH         DW  320
@@ -22,7 +22,7 @@
     BORDER_RIGHT         DW  ?                                                         ; SCREEN_WIDTH - PADDLE_WIDTH
     BORDER_TOP           DW  0
     BORDER_BOTTOM        DW  SCREEN_HEIGHT - PADDLE_HEIGHT
-    BORDER_MIDDLE        EQU 161
+    BORDER_MIDDLE        EQU 159
 
     ; NEEDED COLORS
     BLACK                DB  0
@@ -36,16 +36,16 @@
     Ball_X_Left          DW  160
     Ball_Y_Left          DW  170
     Ball_Size            DW  3
-    Ball_Velocity_X      DW  4
-    Ball_Velocity_Y      DW  4
+    Ball_Velocity_X      DW  2
+    Ball_Velocity_Y      DW  2
     Prev_Time            DB  0
     BALL_COLOR           DB  0
 
     ; TWO PLAYER VELOCITY
-    Ball_Velocity_X1     DW  4
-    Ball_Velocity_Y1     DW  4
-    Ball_Velocity_X2     DW  4
-    Ball_Velocity_Y2     DW  4
+    Ball_Velocity_X1     DW  2
+    Ball_Velocity_Y1     DW  2
+    Ball_Velocity_X2     DW  2
+    Ball_Velocity_Y2     DW  2
 
     ;BRICKS DATA
     Brick_Width          DW  35
@@ -107,7 +107,7 @@
     PADDLE_Y1            DW  60
 
     PADDLE_X2            DW  180
-    PADDLE_Y2            DW  225
+    PADDLE_Y2            DW  221
 
     PADDLE_COLOR1        DB  8
     PADDLE_COLOR2        DB  8
@@ -572,6 +572,8 @@ START_ONE_PLAYER PROC
                                      JE    EXIT_MODE
                                      CMP   LIVES_COUNT, 0
                                      JE    EXIT_MODE
+                                     CMP   SCORE_COUNT, 40
+                                     JE    EXIT_MODE
 
                                      POP   DX
                                      POP   CX
@@ -633,18 +635,12 @@ START_TWO_PLAYER PROC
                                      INT   10H
 
     ; DRAW VERTICAL LINE AT THE CENTER OF THE SCREEN
-                                     mov   di, 161                                 ; Starting position in video memory (DI = 159)
-                                     mov   dx, di                                  ; Save the initial position in DX
-                                     mov   cx, 200                                 ; Length of the vertical line
-                                     mov   al, 0FH                                 ; Pixel color (e.g., 2)
-    
-    vert:                            
-                                     stosb                                         ; Write AL (color) to memory at DI
-                                     mov   di, dx                                  ; Restore DI to the starting position
-                                     add   di, 320                                 ; Move to the next row (320 bytes down)
-                                     mov   dx, di                                  ; Save new starting position for the next iteration
-                                     dec   cx                                      ; Decrement the line counter
-                                     jnz   vert                                    ; Repeat until CX = 0
+                                     mov   di, 159                                 ; Starting position in video memory (DI = 159)
+                                     mov   si, 2
+                                     mov   dx, 200
+                                     mov   al, 0FH
+                                     call  Draw_Single_Rect
+
 
                                      call  Draw_Score_Container
                                      call  Draw_Score_Container_right
@@ -659,9 +655,9 @@ START_TWO_PLAYER PROC
                                      MOV   SCORE_COUNT_PLAYER_2, 0
 
                                      MOV   Ball_X_Right , 165
-                                     MOV   Ball_Y_Right , 75
+                                     MOV   Ball_Y_Right , 78
                                      MOV   Ball_X_Left , 165
-                                     MOV   Ball_Y_Left , BORDER_MIDDLE + 77
+                                     MOV   Ball_Y_Left , 239                       ;border_middle + 77
                                     
     ; CHECK IF THE BALL VELOCITY IS NEG MAKE IT POSITIVE
                                      CMP   Ball_Velocity_X1, 0
@@ -679,9 +675,9 @@ START_TWO_PLAYER PROC
                                      MOV   Bricks_Rows, 3
                                      MOV   Bricks_Cols, 8
                                      MOV   Brick_Height, 8
-                                     MOV   Brick_Width, 30
-                                     MOV   Gap_X, 11
-                                     MOV   Gap_Y, 5
+                                     MOV   Brick_Width, 32
+                                     MOV   Gap_X, 8
+                                     MOV   Gap_Y, 4
                                      MOV   Brick_Color, 10
                                      MOV   SCORE_COUNT, 0
 
@@ -1000,7 +996,10 @@ INPUT_TWO_PLAYER PROC
     PLAYER_2_MOVE_LEFTT:             
                                      MOV   AX, PADDLE_Y2
                                      SUB   AX, PADDLE_SPEED
-                                     CMP   AX, BORDER_MIDDLE - 1
+    ;  CMP   AX, BORDER_MIDDLE - 1
+                                     MOV   CX, BORDER_MIDDLE
+                                     ADD   CX, 2
+                                     CMP   AX, CX
                                      JL    PLAYER_2_MOVE_LEFTT_DONE
                                      MOV   [PADDLE_Y2], AX
     PLAYER_2_MOVE_LEFTT_DONE:        
@@ -1515,7 +1514,7 @@ Initialize_Bricks_Positions PROC
                                      MUL   BX
                                      POP   DX
                                      MOV   BX, AX
-                                     ADD   BX, 3
+                                     ADD   BX, 4
                                      POP   AX
 
     
@@ -1777,8 +1776,8 @@ Move_Ball PROC
                                      MOV   Ball_Y, 158
                                      MOV   PADDLE_X, 180
                                      MOV   PADDLE_Y, 140
-                                     MOV   Ball_Velocity_X, 4
-                                     MOV   Ball_Velocity_Y, 4
+                                     MOV   Ball_Velocity_X, 2
+                                     MOV   Ball_Velocity_Y, 2
                                      NEG   Ball_Velocity_X
                                      NEG   Ball_Velocity_Y
 
@@ -1875,7 +1874,7 @@ Move_Ball_Two_Player_Left PROC
                                      CMP   Ball_X_Right, AX
                                      JL    SKIP_Two_Player
     ;  INC   ESCSTATUS
-                                     DEC   LIVES_COUNT
+                                    ;  DEC   LIVES_COUNT
 
                                      CALL  DRAW_LIVES
 
@@ -1894,12 +1893,12 @@ Move_Ball_Two_Player_Left PROC
                                      CALL  Draw_Single_Rect
 
     ;Reset paddle and ball positions
-                                     MOV   Ball_X_Right, 120
-                                     MOV   Ball_Y_RIGHT, 140
+                                     MOV   Ball_X_Right, 165
+                                     MOV   Ball_Y_Right, 78
                                      MOV   PADDLE_X1, 180
                                      MOV   PADDLE_Y1, 60
-                                     MOV   Ball_Velocity_X1, 4
-                                     MOV   Ball_Velocity_Y1, 4
+                                     MOV   Ball_Velocity_X1, 2
+                                     MOV   Ball_Velocity_Y1, 2
                                      NEG   Ball_Velocity_X1
                                      NEG   Ball_Velocity_Y1
 
@@ -1936,9 +1935,9 @@ Move_Ball_Two_Player_Left PROC
 
                                      CMP   Ball_Y_Right,0                          ;Right edge of our screen
                                      JLE   Neg_Velocity_Y_Two_Player
-                                     MOV   AX,BORDER_MIDDLE - 5                    ;Middle of sreen
+                                     MOV   AX,BORDER_MIDDLE - 6                    ;Middle of sreen
                                      CMP   Ball_Y_Right,AX
-                                     JGE   Neg_Velocity_Y_Two_Player
+                                     JG   Neg_Velocity_Y_Two_Player
 
                                      CALL  Bricks_Collision_Left
     ;  RET
@@ -2002,7 +2001,7 @@ Move_Ball_Two_Player_Right PROC
                                      JL    SKIP_Two_Player2
     ;  INC   ESCSTATUS
 
-                                     DEC   LIVES_COUNT_PLAYER_2
+                                    ;  DEC   LIVES_COUNT_PLAYER_2
 
                                      CALL  Draw_Lives_Right
 
@@ -2021,12 +2020,12 @@ Move_Ball_Two_Player_Right PROC
                                      CALL  Draw_Single_Rect
 
     ;Reset paddle and ball positions
-                                     MOV   Ball_X_Left, 160
-                                     MOV   Ball_Y_Left, 170
+                                     MOV   Ball_X_Left, 165
+                                     MOV   Ball_Y_Left, 239
                                      MOV   PADDLE_X2, 180
                                      MOV   PADDLE_Y2, 225
-                                     MOV   Ball_Velocity_X2,4
-                                     MOV   Ball_Velocity_Y2,4
+                                     MOV   Ball_Velocity_X2,2
+                                     MOV   Ball_Velocity_Y2,2
                                      NEG   Ball_Velocity_X2
                                      NEG   Ball_Velocity_Y2
 
@@ -2062,8 +2061,8 @@ Move_Ball_Two_Player_Right PROC
 
 
 
-                                     CMP   Ball_Y_Left,BORDER_MIDDLE + 2           ;COMPARE WITH MIDDLE OF THE SCREEN
-                                     JLE   Neg_Velocity_Y_Two_Player2
+                                     CMP   Ball_Y_Left,BORDER_MIDDLE + 4           ;COMPARE WITH MIDDLE OF THE SCREEN
+                                     JL   Neg_Velocity_Y_Two_Player2
                                      MOV   AX, 318                                 ;COMPARE WITH THE RIGHT OF THE SCREEN
                                      CMP   Ball_Y_Left,AX
                                      JGE   Neg_Velocity_Y_Two_Player2
