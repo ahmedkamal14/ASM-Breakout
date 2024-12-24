@@ -36,7 +36,7 @@
     Ball_Y_Right         DW  78
     Ball_X_Left          DW  165
     Ball_Y_Left          DW  239
-    Ball_Size            DW  3
+    Ball_Size            DW  2                                                         ;I=0;I<=2 , HENCE IT IS 3 PIXELS WIDE
     Ball_Velocity_X      DW  4
     Ball_Velocity_Y      DW  4
     Prev_Time            DB  0
@@ -2726,9 +2726,9 @@ Move_Ball_Two_Player_Left PROC
 
                                      CMP   Ball_Y_Right,0                          ;Right edge of our screen
                                      JLE   Neg_Velocity_Y_Two_Player
-                                     MOV   AX,  BORDER_MIDDLE - 6                  ;Middle of sreen: BORDER_MIDDLE - 3
+                                     MOV   AX,  BORDER_MIDDLE - 3                  ;Middle of sreen: BORDER_MIDDLE - 3
                                      CMP   Ball_Y_Right,AX
-                                     JG    Neg_Velocity_Y_Two_Player
+                                     JGE   Neg_Velocity_Y_Two_Player
 
                                      CALL  Bricks_Collision_Left
     ;  RET
@@ -2817,6 +2817,8 @@ Move_Ball_Two_Player_Right PROC
                                      MOV   PADDLE_Y2, 225
                                      MOV   Ball_Velocity_X2,2
                                      MOV   Ball_Velocity_Y2,2
+
+
                                      NEG   Ball_Velocity_X2
                                      NEG   Ball_Velocity_Y2
 
@@ -2852,8 +2854,8 @@ Move_Ball_Two_Player_Right PROC
 
 
 
-                                     CMP   Ball_Y_Left,BORDER_MIDDLE+4             ;COMPARE WITH MIDDLE OF THE SCREEN
-                                     JL    Neg_Velocity_Y_Two_Player2
+                                     CMP   Ball_Y_Left,BORDER_MIDDLE+2             ;COMPARE WITH MIDDLE OF THE SCREEN
+                                     JLE   Neg_Velocity_Y_Two_Player2
                                      MOV   AX, 316                                 ;COMPARE WITH THE RIGHT OF THE SCREEN
                                      CMP   Ball_Y_Left,AX
                                      JGE   Neg_Velocity_Y_Two_Player2
