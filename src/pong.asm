@@ -6,7 +6,7 @@
     PADDLE_Y             DW  140
     PADDLE_WIDTH         DW  40
     PADDLE_HEIGHT        DW  6
-    PADDLE_COLOR         DB  3
+    PADDLE_COLOR         DB  8
     PADDLE_SPEED         DW  6
 
     ; SCREEN INFO
@@ -112,13 +112,7 @@
 
     PLAYER_INPUT         DB  ?
 
-
     START_PLAYING        DB  0
-
-    GIFT_TIME            DB  5D
-    GIFT_STATUS          DB  0
-    GIFT_X               DW  75d
-    GIFT_Y               DW  160d
 
     ; PING PONG DATA
     PLAYER_LEFT_X        DW  80
@@ -151,7 +145,6 @@
     WHO_STARTED          DB  0
     START_PLAYING_PONG   DB  0
     AWL_MARA             DB  0
-
 
 .CODE
 
@@ -524,6 +517,109 @@ START_CHAT PROC
                                      RET
 START_CHAT ENDP
 
+    ; PING PONG PROC---------------------------------------------------------------------------------------------------
+START_PING_PONG PROC
+    ; CALC SCREEN SIZE AND STORE IT
+                                     MOV   AX, SCREEN_WIDTH
+                                     MUL   SCREEN_HEIGHT
+                                     MOV   SCREEN_SIZE, AX
+
+    ; CALC BORDER RIGHT AND STORE IT
+                                     MOV   AX, SCREEN_WIDTH
+                                     SUB   AX, PADDLE_WIDTH
+                                     MOV   BORDER_RIGHT, AX
+
+     
+    ; INITIALIZE VIDEO MODE
+                                     MOV   AX, 0A000H
+                                     MOV   ES, AX
+                                     MOV   AH, 0
+                                     MOV   AL, 13H
+                                     INT   10H
+
+    ;DRAW SCORE CONTAINER
+                                     call  Draw_Score_Container
+                                     call  Draw_Score_Container_right
+
+    ; DRAW LEFT PADDLE
+                                     MOV   AX, PLAYER_LEFT_X
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PLAYER_LEFT_Y
+                                     MOV   DI, AX
+
+                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   SI, PING_PADDLE_WIDTH
+
+                                     MOV   AL, PLAYER_LEFT_COLOR
+                                     CALL  Draw_Single_Rect
+
+    ; DRAW RIGHT PADDLE
+                                     MOV   AX, PLAYER_RIGHT_X
+                                     MOV   DX, 320
+                                     MUL   DX
+                                     ADD   AX, PLAYER_RIGHT_Y
+                                     MOV   DI, AX
+
+                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   SI, PING_PADDLE_WIDTH
+
+                                     MOV   AL, PLAYER_RIGHT_COLOR
+                                     CALL  Draw_Single_Rect
+
+                                     
+
+
+    ; DRAW PONG BALL
+                                     CALL  TEST_DRAW_BALL
+
+    Check_Time_Label_PONG:           
+
+    ; Get the current system time
+                                     MOV   AH, 2CH
+                                     INT   21H
+
+    ; Check if the time has changed
+                                     CMP   DL, Prev_Time
+                                     JNE   DUMMY80
+                                     JMP   Check_Time_Label_PONG
+    DUMMY80:                                                                       ; Skip the rest of the loop if time hasn't changed
+                                     MOV   Prev_Time, DL
+
+    ; Handle user input
+                                     PUSH  AX
+                                     PUSH  BX
+                                     PUSH  CX
+                                     PUSH  DX
+                                     CALL  HANDLE_PONG_INPUT
+
+                                     CMP   ESCSTATUS, 0
+                                     JNE   EXITYY
+
+                                     POP   DX
+                                     POP   CX
+                                     POP   BX
+                                     POP   AX
+
+                                     CMP   START_PLAYING_PONG, 0
+                                     JE    Check_Time_Label_PONG
+
+                                     CALL  TEST_DRAW_BLACK_BALL
+                                     CALL  MOVE_BALL_PING
+                                     CALL  TEST_DRAW_BALL
+
+                                     JMP   Check_Time_Label_PONG
+
+    EXITYY:                          
+                                     MOV   AH, 0
+                                     MOV   AL, 3
+                                     INT   10H
+
+                                     CALL  MAIN
+
+START_PING_PONG ENDP
+
+
     ; ONE PLAYER PROC---------------------------------------------------------------------------------------------------
 START_ONE_PLAYER PROC
 
@@ -547,12 +643,7 @@ START_ONE_PLAYER PROC
     ;DRAW SCORE CONTAINER
                                      CALL  Draw_Score_Container
 
-    ;INTIALIZE PADDEL VALUES
-                                     MOV   PADDLE_COLOR, 3
-                                     MOV   PADDLE_WIDTH, 40
-
     ; DRAW PADDLE
-
                                      MOV   AX, PADDLE_X
                                      MOV   DX, 320
                                      MUL   DX
@@ -582,13 +673,6 @@ START_ONE_PLAYER PROC
                                      MOV   Gap_Y, 5
                                      MOV   Brick_Color, 12
                                      MOV   SCORE_COUNT, 0
-    ; INTIALIZE GIFT  PARAMETERS
-                                     MOV   GIFT_STATUS, 0
-                                     MOV   GIFT_X, 75d
-                                     MOV   GIFT_Y, 160d
-                                     MOV   GIFT_TIME, 3D
-
-
 
 
     ; loop on the bricks states and set them to 1
@@ -628,9 +712,8 @@ START_ONE_PLAYER PROC
                                      CALL  INPUT_MAIN_LOOP
 
                                      CMP   ESCSTATUS, 0
-                                     JE    DUMMY_EXIT
-                                     JMP   EXIT_MODE
-    DUMMY_EXIT:                      
+                                     JNE   EXIT_MODE
+
                                      POP   DX
                                      POP   CX
                                      POP   BX
@@ -643,59 +726,7 @@ START_ONE_PLAYER PROC
                                      CALL  Move_Ball
                                      CALL  Draw_Ball
 
-                                     CMP   GIFT_STATUS, 0
-                                     JE    NO_GIFT
-
-                                     PUSH  AX
-                                     PUSH  BX
-                                     PUSH  CX
-                                     PUSH  DX
-                                     PUSH  DI
-                                     PUSH  SI
-
-                                     MOV   AX, GIFT_X
-                                     MOV   BX, 320d
-                                     MUL   BX
-                                     ADD   AX, GIFT_Y
-                                     MOV   DI, AX
-                                     MOV   SI, 10D
-                                     MOV   DX, 10D
-                                     MOV   AL, 0
-                                     CALL  Draw_Single_Rect
-
-                                     ADD   GIFT_X, 4D
-                                     CMP   GIFT_X, SCREEN_HEIGHT_CONST-10
-                                     JG    RESET_GIFT_STATUS
-                                     MOV   AX, GIFT_X
-                                     MOV   BX, 320d
-                                     MUL   BX
-                                     ADD   AX, GIFT_Y
-                                     MOV   DI, AX
-                                     MOV   SI, 10D
-                                     MOV   DX, 10D
-                                     MOV   AL, 10D
-                                     CALL  Draw_Single_Rect
-                                     POP   SI
-                                     POP   DI
-                                     POP   DX
-                                     POP   CX
-                                     POP   BX
-                                     POP   AX
-                                     JMP   NO_GIFT
-    RESET_GIFT_STATUS:               
-                                     POP   SI
-                                     POP   DI
-                                     POP   DX
-                                     POP   CX
-                                     POP   BX
-                                     POP   AX
-                                     MOV   GIFT_STATUS, 0
-                                     MOV   GIFT_X, 75D
-                                     MOV   GIFT_Y, 160D
-
-
     ; Update the paddle position
-    NO_GIFT:                         
                                      PUSH  DX
                                      PUSH  AX
                                      MOV   DX, PADDLE_HEIGHT
@@ -898,111 +929,6 @@ START_TWO_PLAYER PROC
 
                                      RET
 START_TWO_PLAYER ENDP
-
-START_PING_PONG PROC
-
-                                     MOV   SCORE_COUNT, 0
-
-
-    ; CALC SCREEN SIZE AND STORE IT
-                                     MOV   AX, SCREEN_WIDTH
-                                     MUL   SCREEN_HEIGHT
-                                     MOV   SCREEN_SIZE, AX
-
-    ; CALC BORDER RIGHT AND STORE IT
-                                     MOV   AX, SCREEN_WIDTH
-                                     SUB   AX, PADDLE_WIDTH
-                                     MOV   BORDER_RIGHT, AX
-
-     
-    ; INITIALIZE VIDEO MODE
-                                     MOV   AX, 0A000H
-                                     MOV   ES, AX
-                                     MOV   AH, 0
-                                     MOV   AL, 13H
-                                     INT   10H
-
-    ;DRAW SCORE CONTAINER
-                                     call  Draw_Score_Container
-                                     call  Draw_Score_Container_right
-
-    ; DRAW LEFT PADDLE
-                                     MOV   AX, PLAYER_LEFT_X
-                                     MOV   DX, 320
-                                     MUL   DX
-                                     ADD   AX, PLAYER_LEFT_Y
-                                     MOV   DI, AX
-
-                                     MOV   DX, PING_PADDLE_HEIGHT
-                                     MOV   SI, PING_PADDLE_WIDTH
-
-                                     MOV   AL, PLAYER_LEFT_COLOR
-                                     CALL  Draw_Single_Rect
-
-    ; DRAW RIGHT PADDLE
-                                     MOV   AX, PLAYER_RIGHT_X
-                                     MOV   DX, 320
-                                     MUL   DX
-                                     ADD   AX, PLAYER_RIGHT_Y
-                                     MOV   DI, AX
-
-                                     MOV   DX, PING_PADDLE_HEIGHT
-                                     MOV   SI, PING_PADDLE_WIDTH
-
-                                     MOV   AL, PLAYER_RIGHT_COLOR
-                                     CALL  Draw_Single_Rect
-
-                                     
-
-
-    ; DRAW PONG BALL
-                                     CALL  TEST_DRAW_BALL
-
-    Check_Time_Label_PONG:           
-
-    ; Get the current system time
-                                     MOV   AH, 2CH
-                                     INT   21H
-
-    ; Check if the time has changed
-                                     CMP   DL, Prev_Time
-                                     JNE   DUMMY80
-                                     JMP   Check_Time_Label_PONG
-    DUMMY80:                                                                       ; Skip the rest of the loop if time hasn't changed
-                                     MOV   Prev_Time, DL
-
-    ; Handle user input
-                                     PUSH  AX
-                                     PUSH  BX
-                                     PUSH  CX
-                                     PUSH  DX
-                                     CALL  HANDLE_PONG_INPUT
-
-                                     CMP   ESCSTATUS, 0
-                                     JNE   EXITYY
-
-                                     POP   DX
-                                     POP   CX
-                                     POP   BX
-                                     POP   AX
-
-                                     CMP   START_PLAYING_PONG, 0
-                                     JE    Check_Time_Label_PONG
-
-                                     CALL  TEST_DRAW_BLACK_BALL
-                                     CALL  MOVE_BALL_PING
-                                     CALL  TEST_DRAW_BALL
-
-                                     JMP   Check_Time_Label_PONG
-
-    EXITYY:                          
-                                     MOV   AH, 0
-                                     MOV   AL, 3
-                                     INT   10H
-
-                                     CALL  MAIN
-
-START_PING_PONG ENDP
 
 INIT_PORT PROC
     ; Initialize COM port
@@ -1406,6 +1332,8 @@ TEST_DRAW_BLACK_BALL PROC
                                      JNG   TEST_DRAW_HOR1
                                      RET
 TEST_DRAW_BLACK_BALL ENDP
+
+    ;--------------------------------------------------------
 
 INPUT_TWO_PLAYER PROC
 
@@ -1885,7 +1813,7 @@ Draw_Single_Rect proc
     ;summary:
     ;di=> pixle number
     ;dx=> hieght
-    ;si=> width
+    ;cx=> width
     ;al=> color
     ;  MOV AX, @DATA
     ;  MOV DS, AX
@@ -2810,7 +2738,7 @@ Bricks_Collision PROC
     ;Load Bx with Brick_Y
                                      MOV   BX, [BP + SI]
                                      POP   SI
-                      
+
 
 
                                      MOV   DX,Ball_X
@@ -2867,16 +2795,6 @@ Bricks_Collision PROC
                                      PUSH  BX
                                      PUSH  CX
                                      PUSH  DX
-                                     
-                                     CMP   GIFT_TIME, 0
-                                     JNE   NEVER_MIND
-                                     MOV   GIFT_STATUS, 1D
-                                     MOV   GIFT_TIME, 3D
-                                     INC   PADDLE_COLOR
-                                     ADD   PADDLE_WIDTH, 4D
-
-    NEVER_MIND:                      
-                                     DEC   GIFT_TIME
 
     ; MAKE COLLISION SOUND
                                      CALL  START_COLLISION_SOUND
@@ -3035,4 +2953,5 @@ START_COLLISION_SOUND ENDP
 
     ;---------------------------------------------------------------------------------------------------------------
 
+                                     
 END MAIN
