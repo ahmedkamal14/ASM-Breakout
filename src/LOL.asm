@@ -637,11 +637,17 @@ START_ONE_PLAYER PROC
                                      CALL  INPUT_MAIN_LOOP
 
                                      CMP   ESCSTATUS, 1
-                                     JE    EXIT_MODE
+                                     JNE   DUMMY242
+                                     JMP   EXIT_MODE
+    DUMMY242:                        
                                      CMP   LIVES_COUNT, 0
-                                     JE    EXIT_MODE
+                                     JNE   DUMMY243
+                                     JMP   EXIT_MODE
+    DUMMY243:                        
                                      CMP   SCORE_COUNT, 40
-                                     JE    EXIT_MODE
+                                     JNE   DUMMY244
+                                     JMP   EXIT_MODE
+    DUMMY244:                        
 
                                      POP   DX
                                      POP   CX
@@ -2478,7 +2484,7 @@ Move_Ball_Two_Player_Left PROC
                                      CMP   Ball_X_Right, AX
                                      JL    SKIP_Two_Player
     ;  INC   ESCSTATUS
-    ;  DEC   LIVES_COUNT
+                                     DEC   LIVES_COUNT
 
                                      CALL  DRAW_LIVES
 
@@ -2605,7 +2611,7 @@ Move_Ball_Two_Player_Right PROC
                                      JL    SKIP_Two_Player2
     ;  INC   ESCSTATUS
 
-    ;  DEC   LIVES_COUNT_PLAYER_2
+                                     DEC   LIVES_COUNT_PLAYER_2
 
                                      CALL  Draw_Lives_Right
 
