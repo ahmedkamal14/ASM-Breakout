@@ -109,10 +109,15 @@
     PADDLE_COLOR1        DB  8
     PADDLE_COLOR2        DB  8
 
+    PLAYER_INPUT         DB  ?
+
+
+    START_PLAYING        DB  0
+
 
 .CODE
 
-MAIN proc far
+MAIN proc FAR
     ; Initialize the data segment
                                      mov   ax, @data
                                      mov   ds, ax
@@ -466,10 +471,6 @@ START_CHAT ENDP
     ; ONE PLAYER PROC---------------------------------------------------------------------------------------------------
 START_ONE_PLAYER PROC
 
-    ; INITIALIZE DATA SEGMENT
-    ; MOV   AX, @DATA
-    ; MOV   DS, AX
-
     ; CALC SCREEN SIZE AND STORE IT
                                      MOV   AX, SCREEN_WIDTH
                                      MUL   SCREEN_HEIGHT
@@ -637,17 +638,17 @@ START_TWO_PLAYER PROC
                                      call  Draw_Score_Container
                                      call  Draw_Score_Container_right
 
-
+                                     MOV   START_PLAYING, 0
     ; INITIALIZATIONS
                                     
 
                                      MOV   ESCSTATUS, 0
                                      MOV   SCORE_COUNT_PLAYER_2, 0
 
-                                     MOV   Ball_X_Right , 120
-                                     MOV   Ball_Y_Right , 140
-                                     MOV   Ball_X_Left , 160
-                                     MOV   Ball_Y_Left , 170
+                                     MOV   Ball_X_Right , 165
+                                     MOV   Ball_Y_Right , 75
+                                     MOV   Ball_X_Left , 165
+                                     MOV   Ball_Y_Left , BORDER_MIDDLE + 77
                                     
     ; CHECK IF THE BALL VELOCITY IS NEG MAKE IT POSITIVE
                                      CMP   Ball_Velocity_X1, 0
@@ -734,8 +735,8 @@ START_TWO_PLAYER PROC
                                      PUSH  DX
                                      CALL  INPUT_TWO_PLAYER
 
-                                     CMP   ESCSTATUS, 0
-                                     JNE   EXIT_MODE_TWO_PLAYER
+    ;  CMP   ESCSTATUS, 0
+    ;  JNE   EXIT_MODE_TWO_PLAYER
 
                                      POP   DX
                                      POP   CX
@@ -743,6 +744,9 @@ START_TWO_PLAYER PROC
                                      POP   AX
 
     ; Handle ball movement and collision
+    ;  CMP   START_PLAYING, 0
+    ;  JE    Check_Time_Label_Two_Player
+
                                      CALL  Draw_Black_Ball_Right
                                      CALL  Move_Ball_Two_Player_Left
                                      CALL  Draw_Ball_Right
@@ -774,32 +778,173 @@ START_TWO_PLAYER PROC
                                      RET
 START_TWO_PLAYER ENDP
 
-INPUT_TWO_PLAYER PROC
-    ; CHECK IF A KEY IS PRESSED
-                                     MOV   AH, 01H
-                                     INT   16H
-                                     JNZ   DUMMY5
-                                     JMP   TWO_PLAYER_EXIT
-    DUMMY5:                          
+INIT_PORT PROC
+    ; Initialize COM port
+    ; Set Divisor Latch Access Bit
+                                     mov   dx, 3FBh                                ; Line Control Register
+                                     mov   al, 10000000b                           ; Set Divisor Latch Access Bit
+                                     out   dx, al
 
-    ; FETCH THE KEY DETAILS
-                                     MOV   AH, 00H
-                                     INT   16H
+    ; Set LSB byte of the Baud Rate Divisor Latch register
+                                     mov   dx, 3F8h
+                                     mov   al, 0Ch
+                                     out   dx, al
+
+    ; Set MSB byte of the Baud Rate Divisor Latch register
+                                     mov   dx, 3F9h
+                                     mov   al, 00h
+                                     out   dx, al
+
+    ; Set port configuration
+                                     mov   dx, 3FBh
+                                     mov   al, 00011011b
+                                     out   dx, al
+
+                                     RET
+INIT_PORT ENDP
+
+INPUT_TWO_PLAYER PROC
+
+    ; SERIAL PART --------------------------########################################--------------------------------
+                                     CALL  INIT_PORT
+    ;SENDING BALL_LIFT COORDINATE
+                                     mov   dx, 3FDh                                ; Line Status Register
+                                     in    al, dx                                  ; Read Line Status
+                                     and   al, 00100000b
+                                     jz    SEND_TWO_PLAYER
+                                     MOV   dx, 3F8h                                ; Transmit Data Register
+                                     mov   al, BYTE PTR Ball_X_Right
+                                     out   dx, al
+
+
+                                     mov   dx, 3FDh                                ; Line Status Register
+                                     in    al, dx                                  ; Read Line Status
+                                     and   al, 00100000b
+                                     jz    SEND_TWO_PLAYER
+                                     MOV   dx, 3F8h                                ; Transmit Data Register
+                                     mov   al, BYTE PTR Ball_Y_Right
+                                     out   dx, al
+    ;-------------------------------------------PADDLE----------------------------------------------------------
+                                     MOV   PLAYER_INPUT, 0
+    ; Check if key is pressed
+                                     mov   ah, 01h
+                                     int   16h
+
+                                     JZ    CHECK_UART_TWO_PLAYER                   ; If no key is pressed, check UART for incoming data
+
+
+    SEND_TWO_PLAYER:                 
+    ; Key is pressed, read it
+                                     mov   ah, 00h
+                                     int   16h
+                                     MOV   PLAYER_INPUT, AL
+
+    ; Check that Transmitter Holding Register is empty
+                                     mov   dx, 3FDh                                ; Line Status Register
+    WAIT_TRANSMIT_TWO_PLAYER:        
+                                     in    al, dx                                  ; Read Line Status
+                                     and   al, 00100000b
+    ;  JZ    START_INPUT
+
+    ; Transmit the value
+                                     mov   dx, 3F8h                                ; Transmit Data Register
+                                     mov   al, PLAYER_INPUT
+                                     out   dx, al
+
+    ; if F is pressed inc START_PLAYING
+                                     CMP   AL, 46H
+                                     JNE   GG
+
+    ; DELAY ONE CLOCK CYCLE
+                                     MOV   CX, 0
+    DELAY:                           
+                                     INC   CX
+                                     CMP   CX, 1000
+                                     JNE   DELAY
+
+                                     JE    START_GAME
+
+
+    GG:                              
+    ; Exit if ESC key is pressed
+                                     cmp   al, 1Bh
+                                     JE    EXITX
+                                     jmp   START_INPUT
+
+    CHECK_UART_TWO_PLAYER:           
+    ; Data is ready, read it
+                                     mov   dx, 3F8h                                ; Receive Data Register
+                                     in    al, dx
+                                     MOV   AH, 00
+                                     mov   Ball_Y_Left, AX
+
+    ; Data is ready, read it
+                                     mov   dx, 3F8h                                ; Receive Data Register
+                                     in    al, dx
+                                     MOV   AH, 0
+                                     mov   Ball_X_Left, AX
+
+    ; ; Check if data is ready to be received from UART
+                                     mov   dx, 3FDh                                ; Line Status Register
+                                     in    al, dx
+                                     and   al, 01h
+                                     JNZ   CONT_TWO_PLAYER                         ; if no data, continue to input handling
+                                     RET
+    CONT_TWO_PLAYER:                 
+    ; Data is ready, read it
+                                     mov   dx, 3F8h                                ; Receive Data Register
+                                     in    al, dx
+                                     
+
+    ; Exit if received value is ESC
+                                     MOV   CL, AL
+                                     cmp   al, 1Bh
+                                     JE    EXITX
+    ; CHECK IF F KEY IS PRESSED
+                                     CMP   AL, 'F'
+                                     JE    START_GAME
+                                     MOV   AL, 0
+                                     JMP   START_INPUT
+    START_GAME:                      
+                                     inc   START_PLAYING
+                                     RET
+
+    EXITX:                           
+                                     inc   ESCSTATUS
+                                     RET
+   
+    ; SERIAL PART END --------------------------########################################--------------------------------
+    START_INPUT:                     
+    ; CHECK IF A KEY IS PRESSED
+    ;  MOV   AH, 01H
+    ;  INT   16H
+                                     CMP   PLAYER_INPUT, 0
+                                     JNZ   DUMMY5
+                                     JMP   CHECK_TWO
+                            
+    DUMMY5:                          
+                                     MOV   AL, PLAYER_INPUT
+                                     MOV   PLAYER_INPUT, 0
+
+    ; ; FETCH THE KEY DETAILS
+    ;                                  MOV   AH, 00H
+    ;                                  INT   16H
 
     ; HANDLE LEFT ARROW KEY
-                                     CMP   AH, 4BH
+                                     CMP   AL, 31H
                                      JE    PLAYER_1_MOVE_LEFTT
 
     ; HANDLE RIGHT ARROW KEY
-                                     CMP   AH, 4DH
+                                     CMP   AL, 33H
                                      JE    PLAYER_1_MOVE_RIGHTT
 
+    CHECK_TWO:                       
     ; HANDLE UP ARROW KEY
-                                     CMP   AL, 31H
+                                     CMP   CL, 31H
                                      JE    PLAYER_2_MOVE_LEFTT
 
     ; HANDLE DOWN ARROW KEY
-                                     CMP   AL, 33H
+                                     CMP   CL, 33H
                                      JNE   DUMMY6
                                      JMP   PLAYER_2_MOVE_RIGHTT
     DUMMY6:                          
