@@ -118,6 +118,7 @@ MAIN proc far
                                      mov   ds, ax
 
                                      MOV   ESCSTATUS, 0
+                                     MOV   LIVES_COUNT, 3
     ;INTIALIZE BALL  POSITION AND ITS VELOCITY
                                      MOV   Ball_X, 160
                                      MOV   Ball_Y, 158
@@ -490,6 +491,9 @@ START_ONE_PLAYER PROC
     ;DRAW SCORE CONTAINER
                                      CALL  Draw_Score_Container
 
+    ;DRAW LIVES
+                                     CALL  DRAW_LIVES
+
     ; DRAW PADDLE
                                      MOV   AX, PADDLE_X
                                      MOV   DX, 320
@@ -558,7 +562,9 @@ START_ONE_PLAYER PROC
                                      PUSH  DX
                                      CALL  INPUT_MAIN_LOOP
 
-                                     CMP   ESCSTATUS, 3
+                                     CMP   ESCSTATUS, 1
+                                     JE    EXIT_MODE
+                                     CMP   LIVES_COUNT, 0
                                      JE    EXIT_MODE
 
                                      POP   DX
@@ -1142,6 +1148,47 @@ Draw_Score PROC
 
 Draw_Score ENDP
 
+Draw_Lives PROC
+
+
+                                     MOV   AL, 0
+                                     MOV   DI, 720
+                                     XOR   CX,CX
+                                     MOV   CL, 3
+    ERASE_LIVES_LOOP:                
+                                     PUSH  CX
+                                     PUSH  DI
+                                     MOV   DX, 4
+                                     MOV   SI, 8
+                                     CALL  Draw_Single_Rect
+                                     POP   DI
+                                     ADD   DI,10
+                                     POP   CX
+                                     LOOP  ERASE_LIVES_LOOP
+                                     
+
+                                     MOV   AL, 4
+                                     MOV   DI, 720
+                                     XOR   CX,CX
+                                     MOV   CL, LIVES_COUNT
+                                     CMP   CL, 0
+                                     JE    END_DRAW_LIVES
+
+    DRAW_LIVES_LOOP:                 
+                                     PUSH  CX
+                                     PUSH  DI
+                                     MOV   DX, 4
+                                     MOV   SI, 8
+                                     CALL  Draw_Single_Rect
+                                     POP   DI
+                                     ADD   DI,10
+                                     POP   CX
+                                     LOOP  DRAW_LIVES_LOOP
+    END_DRAW_LIVES:                  
+                                     RET
+
+Draw_Lives ENDP
+
     ;-----------------------------------------------------------------------------------------------------------------------------
 Draw_Score_right PROC
                                      mov   al, 0Dh
@@ -1538,7 +1585,9 @@ Move_Ball PROC
                                      MOV   AX, SCREEN_HEIGHT_CONST - 10
                                      CMP   Ball_X, AX
                                      JL    SKIP
-                                     INC   ESCSTATUS
+                                     DEC   LIVES_COUNT
+
+                                     CALL  DRAW_LIVES
 
     ;Erase paddle
     ;  MOV DI, PADDLE_X * 320 + PADDLE_Y
