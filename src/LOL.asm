@@ -1034,6 +1034,11 @@ START_PING_PONG PROC
 
                                      MOV   SCORE_COUNT, 0
                                      MOV   SCORE_COUNT_PLAYER_2, 0
+                                     MOV   START_PLAYING_PONG, 0
+                                     MOV   PONG_BALL_X, 100
+                                     MOV   PONG_BALL_Y, 158
+                                     MOV   PLAYER_LEFT_X, 80
+                                     MOV   PLAYER_RIGHT_X, 80
 
 
     ; CALC SCREEN SIZE AND STORE IT
