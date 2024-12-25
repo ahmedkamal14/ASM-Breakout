@@ -2,7 +2,7 @@
 .STACK 600H
 .DATA
     ; PADDLE DATA
-    PADDLE_X             DW  180
+    PADDLE_X             DW  181
     PADDLE_Y             DW  140
     PADDLE_WIDTH         DW  40
     PADDLE_HEIGHT        DW  6
@@ -547,7 +547,7 @@ START_ONE_PLAYER PROC
                           
     NEXT_LEVEL:                      
 
-                                     MOV   Paddle_X, 180
+                                     MOV   Paddle_X, 181
                                      MOV   PADDLE_Y, 140
 
                                      MOV   Ball_X, 160
@@ -824,19 +824,6 @@ START_TWO_PLAYER PROC
                                      MOV   Ball_Y_Left, 239
                                      MOV   Ball_X_Right, 165
                                      MOV   Ball_Y_Right, 78
-
-
-
-                                     MOV   PADDLE_X1, 180
-                                     MOV   PADDLE_Y1, 60
-                                     MOV   PADDLE_X2, 180
-                                     MOV   PADDLE_Y2, 221
-
-                                     MOV   Ball_X_Left, 165
-                                     MOV   Ball_Y_Left, 239
-                                     MOV   Ball_X_Right, 165
-                                     MOV   Ball_Y_Right, 78
-
 
                                      MOV   SCORE_COUNT, 0
                                      MOV   SCORE_COUNT_PLAYER_2, 0
@@ -1980,7 +1967,7 @@ INPUT_MAIN_LOOP ENDP
 INPUT_CLEAR_SCREEN PROC
                                      MOV   AX, 0A000h
                                      MOV   ES, AX
-                                     MOV   DI, (SCREEN_HEIGHT_CONST - 20) * 320
+                                     MOV   DI, (SCREEN_HEIGHT_CONST - 19) * 320
                                      MOV   CX, 2000
                                      MOV   AL, BLACK
                                      REP   STOSB
@@ -2634,7 +2621,7 @@ Move_Ball PROC
     ;Reset paddle and ball positions
                                      MOV   Ball_X, 160
                                      MOV   Ball_Y, 158
-                                     MOV   PADDLE_X, 180
+                                     MOV   PADDLE_X, 181
                                      MOV   PADDLE_Y, 140
                                      MOV   PADDLE_SPEED, 4
                                      MOV   Ball_Velocity_X, 2
@@ -2686,7 +2673,7 @@ Move_Ball PROC
 
                                      MOV   AX,PADDLE_X
                                      ADD   AX,PADDLE_HEIGHT
-                                     ADD   AX,4
+                                     ADD   AX,2
                                      CMP   Ball_X,AX
                                      JNL   STOP
 
