@@ -557,6 +557,8 @@ START_ONE_PLAYER PROC
                                      MOV   Ball_Velocity_X, 2
                                      MOV   Ball_Velocity_Y, 2
 
+                                     MOV   PADDLE_COLOR, 3
+
     ; CALC SCREEN SIZE AND STORE IT
                                      MOV   AX, SCREEN_WIDTH
                                      MUL   SCREEN_HEIGHT
@@ -3395,6 +3397,11 @@ Bricks_Collision PROC
                                      MOV   GIFT_STATUS, 1D
                                      MOV   GIFT_TIME, 3D
                                      INC   PADDLE_COLOR
+                                     CMP   PADDLE_COLOR, 0
+                                     JNE   CONTGG
+                                     INC   PADDLE_COLOR
+
+    CONTGG:                          
                                      ADD   PADDLE_SPEED, 1D
                                      INC   Ball_Velocity_X
 
