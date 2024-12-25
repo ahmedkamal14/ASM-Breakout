@@ -98,6 +98,9 @@
     recFLAG              DB  0
 
     WINSTRING            DB  'YOU WIN', 0Ah, 0Dh, '$'
+    NEXT_LEVEL_MSG       DB  'YOU WON! BE READY FOR THE NEXT LEVEL!', 0Ah, 0Dh, '$'
+
+
     LOSESTRING           DB  'YOU LOSE', 0Ah, 0Dh, '$'
 
     ; ESCAPE STATUS
@@ -656,6 +659,7 @@ START_ONE_PLAYER PROC
 
 
                                      CMP   SCORE_COUNT, 24
+
                                      JNE   KMELYA3M
                                      JMP   EXIT_MODE
     KMELYA3M:                        
@@ -777,6 +781,13 @@ START_ONE_PLAYER PROC
                                      INT   21H
                                      CMP   LEVEL, 4
                                      JE    NO
+                                     MOV   AH, 09H
+                                     LEA   DX, NEXT_LEVEL_MSG
+                                     INT   21H
+                                     MOV   AH, 86H                                 ; Set function number for delay
+                                     MOV   CX, 30                                  ; High-order word of the delay
+                                     MOV   DX, 19456                               ; Low-order word of the delay
+                                     INT   15H
 
                                      JMP   NEXT_LEVEL
 
