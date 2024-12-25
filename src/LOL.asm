@@ -140,7 +140,6 @@
     PING_PADDLE_WIDTH    DW  6
     PING_PADDLE_HEIGHT   DW  40
     PING_PADDLE_HEIGHT2  DW  40
-    PING_PADDLE_HEIGHT2  DW  40
 
     PING_PADDLE_SPEED    DW  5
 
@@ -149,7 +148,6 @@
     ; PONG BALL DATA
     PONG_BALL_X          DW  100
     PONG_BALL_Y          DW  158
-    PONG_BALL_SIZE       DW  4
     PONG_BALL_SIZE       DW  4
     PONG_BALL_COLOR      DB  10
     PONG_BALL_SPEED_X    DW  2
@@ -1036,8 +1034,7 @@ START_TWO_PLAYER PROC
                                      INT   21H
                                      INC   PLAYER_LEFT_COLOR
                                      ADD   PING_PADDLE_HEIGHT, 6D
-                                     INC   PLAYER_LEFT_COLOR
-                                     ADD   PING_PADDLE_HEIGHT, 6D
+                                   
                                      JMP   NO2
 
 
@@ -1049,9 +1046,7 @@ START_TWO_PLAYER PROC
                                      ADD   PING_PADDLE_HEIGHT2, 6D
 
                                      
-                                     INC   PLAYER_RIGHT_COLOR
-                                     ADD   PING_PADDLE_HEIGHT2, 6D
-
+                                  
                                      
 
     NO2:                             
@@ -1062,7 +1057,6 @@ START_TWO_PLAYER PROC
                                      INT   15H                                     ; Call BIOS to execute the delay
                                      CALL  START_PING_PONG
                                      
-                                     CALL  START_PING_PONG
                                      
 START_TWO_PLAYER ENDP
 
@@ -1119,7 +1113,6 @@ START_PING_PONG PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
 
-                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      MOV   DX, PING_PADDLE_HEIGHT2
                                      MOV   SI, PING_PADDLE_WIDTH
 
@@ -1401,7 +1394,6 @@ HANDLE_PONG_INPUT PROC
                                      MOV   DI, AX
 
                                      MOV   DX, PING_PADDLE_HEIGHT2
-                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
 
                                      MOV   AL, PLAYER_LEFT_COLOR
@@ -1426,7 +1418,6 @@ HANDLE_PONG_INPUT PROC
                                      MOV   DI, AX
     
                                      MOV   DX, PING_PADDLE_HEIGHT2
-                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
     
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -1450,7 +1441,6 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
     
-                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
     
