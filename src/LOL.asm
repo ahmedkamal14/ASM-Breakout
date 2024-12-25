@@ -550,6 +550,10 @@ START_ONE_PLAYER PROC
                                      MOV   Ball_X, 160
                                      MOV   Ball_Y, 158
 
+                                     MOV   PADDLE_SPEED, 4
+                                     MOV   Ball_Velocity_X, 2
+                                     MOV   Ball_Velocity_Y, 2
+
     ; CALC SCREEN SIZE AND STORE IT
                                      MOV   AX, SCREEN_WIDTH
                                      MUL   SCREEN_HEIGHT
@@ -651,7 +655,7 @@ START_ONE_PLAYER PROC
     ; Handle user input
 
 
-                                     CMP   SCORE_COUNT, 10
+                                     CMP   SCORE_COUNT, 24
                                      JNE   KMELYA3M
                                      JMP   EXIT_MODE
     KMELYA3M:                        
@@ -669,7 +673,7 @@ START_ONE_PLAYER PROC
                                      JNE   DUMMY243
                                      JMP   EXIT_MODE
     DUMMY243:                        
-                                     CMP   SCORE_COUNT, 10
+                                     CMP   SCORE_COUNT, 24
                                      JNE   DUMMY244
                                      JMP   EXIT_MODE
     DUMMY244:                        
@@ -762,11 +766,12 @@ START_ONE_PLAYER PROC
                                      mov   dl, 20
                                      int   10h
 
-                                     CMP   SCORE_COUNT, 10
+                                     CMP   SCORE_COUNT, 24
                                      JNE   LOSE
 
     ; Display the win message
                                      INC   LEVEL
+                                     MOV   SCORE_COUNT, 0
                                      MOV   AH, 09H
                                      LEA   DX, WINSTRING
                                      INT   21H
@@ -2596,8 +2601,8 @@ Move_Ball PROC
                                      JL    SKIP
     ;  INC   ESCSTATUS
                                      DEC   LIVES_COUNT
-                                     MOV   Ball_Velocity_X, 4
-                                     MOV   Ball_Velocity_Y, 4
+                                     MOV   Ball_Velocity_X, 2
+                                     MOV   Ball_Velocity_Y, 2
 
                                      CALL  DRAW_LIVES
 
@@ -2620,6 +2625,7 @@ Move_Ball PROC
                                      MOV   Ball_Y, 158
                                      MOV   PADDLE_X, 180
                                      MOV   PADDLE_Y, 140
+                                     MOV   PADDLE_SPEED, 4
                                      MOV   Ball_Velocity_X, 2
                                      MOV   Ball_Velocity_Y, 2
                                      NEG   Ball_Velocity_X
@@ -3374,10 +3380,11 @@ Bricks_Collision PROC
                                      CALL  Draw_Single_Rect
                                      POP   CX
                                      POP   DX
-                                     POP   SI                                      ;After Draw single rect
+                                     POP   SI
+                                     INC   SCORE_COUNT
+    ;After Draw single rect
     SKIP_DRAW_BLACK_BRICK:           
                                      NEG   Ball_Velocity_X
-                                     INC   SCORE_COUNT
 
                                      PUSHF
                                      PUSH  AX
