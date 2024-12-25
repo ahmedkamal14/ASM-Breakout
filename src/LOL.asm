@@ -37,8 +37,8 @@
     Ball_X_Left          DW  165
     Ball_Y_Left          DW  239
     Ball_Size            DW  2                                                         ;I=0;I<=2 , HENCE IT IS 3 PIXELS WIDE
-    Ball_Velocity_X      DW  4
-    Ball_Velocity_Y      DW  4
+    Ball_Velocity_X      DW  2
+    Ball_Velocity_Y      DW  2
     Prev_Time            DB  0
     BALL_COLOR           DB  0
 
@@ -139,6 +139,7 @@
 
     PING_PADDLE_WIDTH    DW  6
     PING_PADDLE_HEIGHT   DW  40
+    PING_PADDLE_HEIGHT2  DW  40
 
     PING_PADDLE_SPEED    DW  5
 
@@ -147,7 +148,7 @@
     ; PONG BALL DATA
     PONG_BALL_X          DW  100
     PONG_BALL_Y          DW  158
-    PONG_BALL_SIZE       DW  3
+    PONG_BALL_SIZE       DW  4
     PONG_BALL_COLOR      DB  10
     PONG_BALL_SPEED_X    DW  2
     PONG_BALL_SPEED_Y    DW  6
@@ -159,6 +160,7 @@
     START_PLAYING_PONG   DB  0
     AWL_MARA             DB  0
 
+    LEVEL                DB  1
 
 .CODE
 
@@ -174,6 +176,7 @@ MAIN proc FAR
     ;INTIALIZE BALL  POSITION AND ITS VELOCITY
                                      MOV   Ball_X, 160
                                      MOV   Ball_Y, 158
+                                     MOV   LEVEL,1
                                      NEG   Ball_Velocity_X
                                      NEG   Ball_Velocity_Y
 
@@ -538,6 +541,14 @@ START_CHAT ENDP
     ; ONE PLAYER PROC---------------------------------------------------------------------------------------------------
 START_ONE_PLAYER PROC
 
+    NEXT_LEVEL:                      
+
+                                     MOV   Paddle_X, 180
+                                     MOV   PADDLE_Y, 140
+
+                                     MOV   Ball_X, 160
+                                     MOV   Ball_Y, 158
+
     ; CALC SCREEN SIZE AND STORE IT
                                      MOV   AX, SCREEN_WIDTH
                                      MUL   SCREEN_HEIGHT
@@ -607,9 +618,11 @@ START_ONE_PLAYER PROC
 
     ; loop on the bricks states and set them to 1
                                      MOV   SI, 0
-                                     MOV   CX, 40
+                                     MOV   CX, 24
+
     Set_Bricks_States:               
-                                     MOV   byte ptr [Bricks_States + SI], 1
+                                     MOV   AL, LEVEL
+                                     MOV   byte ptr [Bricks_States + SI], AL
                                      INC   SI
                                      LOOP  Set_Bricks_States
 
@@ -637,7 +650,7 @@ START_ONE_PLAYER PROC
     ; Handle user input
 
 
-                                     CMP   SCORE_COUNT, 24
+                                     CMP   SCORE_COUNT, 10
                                      JNE   KMELYA3M
                                      JMP   EXIT_MODE
     KMELYA3M:                        
@@ -655,7 +668,7 @@ START_ONE_PLAYER PROC
                                      JNE   DUMMY243
                                      JMP   EXIT_MODE
     DUMMY243:                        
-                                     CMP   SCORE_COUNT, 40
+                                     CMP   SCORE_COUNT, 10
                                      JNE   DUMMY244
                                      JMP   EXIT_MODE
     DUMMY244:                        
@@ -748,13 +761,19 @@ START_ONE_PLAYER PROC
                                      mov   dl, 20
                                      int   10h
 
-                                     CMP   SCORE_COUNT, 24
+                                     CMP   SCORE_COUNT, 10
                                      JNE   LOSE
 
     ; Display the win message
+                                     INC   LEVEL
                                      MOV   AH, 09H
                                      LEA   DX, WINSTRING
                                      INT   21H
+                                     CMP   LEVEL, 4
+                                     JE    NO
+
+                                     JMP   NEXT_LEVEL
+
                                      JMP   NO
     LOSE:                            
                                      MOV   AH, 09H
@@ -777,6 +796,18 @@ START_ONE_PLAYER PROC
 START_ONE_PLAYER ENDP
 
 START_TWO_PLAYER PROC
+
+
+                                     MOV   PADDLE_X1, 180
+                                     MOV   PADDLE_Y1, 60
+                                     MOV   PADDLE_X2, 180
+                                     MOV   PADDLE_Y2, 221
+
+                                     MOV   Ball_X_Left, 165
+                                     MOV   Ball_Y_Left, 239
+                                     MOV   Ball_X_Right, 165
+                                     MOV   Ball_Y_Right, 78
+
 
                                      MOV   SCORE_COUNT, 0
                                      MOV   SCORE_COUNT_PLAYER_2, 0
@@ -988,11 +1019,18 @@ START_TWO_PLAYER PROC
                                      MOV   AH, 09H
                                      LEA   DX, WINSTRING
                                      INT   21H
+                                     INC   PLAYER_LEFT_COLOR
+                                     ADD   PING_PADDLE_HEIGHT, 6D
                                      JMP   NO2
+
     LOSE_TWO:                        
                                      MOV   AH, 09H
                                      LEA   DX, LOSESTRING
                                      INT   21H
+                                     INC   PLAYER_RIGHT_COLOR
+                                     ADD   PING_PADDLE_HEIGHT2, 6D
+
+                                     
 
     NO2:                             
     ; WAIT 2 SECONDS
@@ -1000,11 +1038,8 @@ START_TWO_PLAYER PROC
                                      MOV   CX, 30                                  ; High-order word of the delay
                                      MOV   DX, 19456                               ; Low-order word of the delay
                                      INT   15H                                     ; Call BIOS to execute the delay
-
-
-                                     CALL  MAIN
-
-                                     RET
+                                     CALL  START_PING_PONG
+                                     
 START_TWO_PLAYER ENDP
 
 START_PING_PONG PROC
@@ -1055,7 +1090,7 @@ START_PING_PONG PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
 
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      MOV   SI, PING_PADDLE_WIDTH
 
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -1137,7 +1172,7 @@ START_PING_PONG PROC
                                      MOV   AH, 09H
                                      LEA   DX, WINSTRING
                                      INT   21H
-                                     JMP   NO2
+                                     JMP   NO2P
     LOSE_TWOP:                       
                                      MOV   AH, 09H
                                      LEA   DX, LOSESTRING
@@ -1149,7 +1184,6 @@ START_PING_PONG PROC
                                      MOV   CX, 30                                  ; High-order word of the delay
                                      MOV   DX, 19456                               ; Low-order word of the delay
                                      INT   15H                                     ; Call BIOS to execute the delay
-
 
 
                                      CALL  MAIN
@@ -1335,7 +1369,7 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_LEFT_Y
                                      MOV   DI, AX
 
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
 
                                      MOV   AL, PLAYER_LEFT_COLOR
@@ -1359,7 +1393,7 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
     
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
     
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -1383,7 +1417,7 @@ HANDLE_PONG_INPUT PROC
                                      ADD   AX, PLAYER_RIGHT_Y
                                      MOV   DI, AX
     
-                                     MOV   DX, PING_PADDLE_HEIGHT
+                                     MOV   DX, PING_PADDLE_HEIGHT2
                                      mov   si, PING_PADDLE_WIDTH
     
                                      MOV   AL, PLAYER_RIGHT_COLOR
@@ -2379,11 +2413,11 @@ Draw_Bricks PROC
                                      DIV   DL
                                      MOV   SI, AX
                                      MOV   AL, [Bricks_States + SI]
-                                     CMP   AL, 1
+                                     CMP   AL, 0
                                      POP   SI
                                      POP   DX
                                      POP   AX
-                                     JNE   Skip_Brick
+                                     JE    Skip_Brick
 
     ;Load AX, BX with the coordinates from Bricks_Positions
                                      PUSH  AX
@@ -3274,12 +3308,26 @@ Bricks_Collision PROC
                                      MOV   DX,Ball_Y
                                      ADD   DX,Ball_Size
                                      CMP   DX ,BX
-                                     JNG   No_Collision
-
+                                     JG    DUMMY229
+                                     JMP   No_Collision
+    DUMMY229:                        
                                      MOV   DX, BX
                                      ADD   DX, Brick_Width
                                      CMP   Ball_Y,DX
-                                     JNL   No_Collision
+                                     JL    DUMMY999
+                                     JMP   No_Collision
+
+    DUMMY999:                        
+    ;This  causes a problem
+                                     PUSH  SI
+                                     MOV   SI, CX
+                                     PUSH  DX
+                                     MOV   DL,  byte ptr [Bricks_States + SI]
+                                     CMP   DL, 1
+                                     POP   DX
+                                     POP   SI
+                                     JNE   SKIP_DRAW_BLACK_BRICK
+                                    
     ;Multiply AX (y) * 320 + BX (x)
                                      PUSH  BX
                                      MOV   BX, 320
@@ -3301,7 +3349,7 @@ Bricks_Collision PROC
                                      POP   CX
                                      POP   DX
                                      POP   SI                                      ;After Draw single rect
-
+    SKIP_DRAW_BLACK_BRICK:           
                                      NEG   Ball_Velocity_X
                                      INC   SCORE_COUNT
 
@@ -3356,8 +3404,12 @@ Bricks_Collision PROC
                                      POPF
 
                                      PUSH  SI
+                                     PUSH  AX
                                      MOV   SI,CX
-                                     MOV   byte ptr [Bricks_States + SI], 0
+                                     MOV   AL, byte ptr [Bricks_States + SI]
+                                     DEC   AL
+                                     MOV   byte ptr [Bricks_States + SI], AL
+                                     POP   AX
                                      POP   SI
 
     No_Collision:                    
