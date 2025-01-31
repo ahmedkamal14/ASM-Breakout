@@ -1,4 +1,8 @@
 <h1 align ='center' >          Brick Breaker Game (8086 Assembly)</h1> 
+<p align="center">
+
+  <img width="700" height ="400" align="center" src="https://maximkoshel.github.io/web/images/brick_breaker.gif" alt="demo"/>
+</p>
 
 >> Put GIF
 >> Put Dividers 
