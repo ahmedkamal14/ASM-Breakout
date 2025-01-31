@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/Project Workflow.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Project Workflow"
+              "title": "README"
             }
           }
         ]
@@ -93,7 +93,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/Project Workflow.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Project Workflow"
+              "title": "Backlinks for README"
             }
           },
           {
@@ -112,12 +112,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/Project Workflow.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Project Workflow"
+              "title": "Outgoing links from README"
             }
           },
           {
@@ -139,10 +139,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/Project Workflow.md"
+                "file": "README.md"
               },
               "icon": "lucide-list",
-              "title": "Outline of Project Workflow"
+              "title": "Outline of README"
             }
           }
         ]
@@ -163,5 +163,8 @@
     }
   },
   "active": "5fa82b45bd6964e6",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "docs/Project Workflow.md",
+    "README.md"
+  ]
 }
