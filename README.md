@@ -11,16 +11,16 @@ This is a Brick Breaker game developed in Assembly 8086, featuring multiple game
 ## Features <img src="https://i.imgur.com/5Wgs9AN.png" width="28" />
 
 Let's introduce the main page first, as the following image shows, you can go through any mode of the four available modes by pressing their keys.
-![[Pasted image 20250131201437.png]]
 
+<img width="700" height ="400" align="center" src="Pasted image 20250131201423.png" alt="demo"/>
 ### 1. Chat Mode <img src="https://i.imgur.com/oX0oaoH.png" width="24" />
 
 In this mode, communication takes place through text mode. Players can exchange messages via serial communication, allowing both sending and receiving of messages between them.
-![[Pasted image 20250131201344.png]]
 
+<img width="700" height ="400" align="center" src="Pasted image 20250131201437.png"alt="demo"/>
 ### 2. One Player Mode <img src="https://i.imgur.com/SzHotcI.png" width="24" />
 
-![[Pasted image 20250131201359.png]]
+
 This mode operates in assembly video mode and includes the following exciting features:
 
 - Three levels of increasing difficulty.
@@ -29,7 +29,7 @@ This mode operates in assembly video mode and includes the following exciting fe
 - Three lives per player with a scoring system.
 
 ### <img src="https://i.imgur.com/vI2uXuF.png" width="28" /> To start playing this mode, use the 1 and 3 keys on your keyboard (not the left and right arrow keys). <img src="https://i.imgur.com/vI2uXuF.png" width="28" />
-
+<img width="700" height ="400" align="center" src="Pasted image 20250131201359.png" alt="demo"/>
 ### 3. Two Player Mode <img src="https://i.imgur.com/dA4mclF.png" width="24" />
 
 This mode operates in assembly video mode and includes the following exciting features:
@@ -44,8 +44,8 @@ This mode operates in assembly video mode and includes the following exciting fe
 
 - Press the `F` key to start the two-player mode synchronously. Remember, use **uppercase F**, not **lowercase f**.
 - To start playing, use the `1` and `3` keys on your keyboard (not the left and right arrow keys).
-  ![[Pasted image 20250131201416.png]]
 
+<img width="700" height ="400" align="center" src="Pasted image 20250131201416.png" alt="demo"/>
 ### 4. Ping Pong Mode <img src="https://i.imgur.com/H9sDMIn.png" width="24" />
 
 As mentioned earlier, you can access this mode either by pressing `4` from the main menu or by playing the two-player mode, which will automatically transition into the ping pong game after the brick-breaker phase.
@@ -59,9 +59,9 @@ This mode operates in assembly video mode and includes the following exciting fe
 
 - Press the `Q` key to start the two-player mode synchronously. Remember, use **uppercase Q**, not **lowercase q**.
 - To start playing, use the `2` and `5` keys on your keyboard (not the up and down arrow keys).
-![[Pasted image 20250131201423.png]]
+
 <img width="700" height ="400" align="center" src="Pasted image 20250131201423.png" alt="demo"/>
-</p>
+
 
 ## Setup Requirements <img src="https://i.imgur.com/DRfWA84.png" width="28" />
 
