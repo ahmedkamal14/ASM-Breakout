@@ -98,7 +98,7 @@ This project was developed as part of a microprocessors course, showcasing game 
 
 
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+<div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
   <div style="text-align: center;">
     <a href="https://github.com/AmiraKhalid04" target="_blank">
       <img src="https://avatars.githubusercontent.com/u/149877108?s=400&v=4" alt="Amira" style="width: 100px; height: 100px; border-radius: 50%;"/>
@@ -112,13 +112,13 @@ This project was developed as part of a microprocessors course, showcasing game 
     </a>
     <p><strong><a href="https://github.com/Alyaa242" target="_blank">Alyaa Ali</a></strong></p>
   </div>
+
   <div style="text-align: center;">
     <a href="https://github.com/ahmedkamal14" target="_blank">
       <img src="https://avatars.githubusercontent.com/u/153025116?v=4" alt="Ahmed Kamal" style="width: 100px; height: 100px; border-radius: 50%;"/>
     </a>
     <p><strong><a href="https://github.com/ahmedkamal14" target="_blank">Ahmed Kamal</a></strong></p>
   </div>
-
 
   <div style="text-align: center;">
     <a href="https://github.com/ahmed-haz" target="_blank">
@@ -127,3 +127,4 @@ This project was developed as part of a microprocessors course, showcasing game 
     <p><strong><a href="https://github.com/ahmed-haz" target="_blank">Ahmed Hazem</a></strong></p>
   </div>
 </div>
+
