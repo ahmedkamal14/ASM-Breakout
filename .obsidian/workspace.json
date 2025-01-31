@@ -1,14 +1,14 @@
 {
   "main": {
-    "id": "9c8b81afbf79c7c3",
+    "id": "8642fc1190f7b9e8",
     "type": "split",
     "children": [
       {
-        "id": "b3470c5fc2117fce",
+        "id": "850f1e7685780eec",
         "type": "tabs",
         "children": [
           {
-            "id": "5fa82b45bd6964e6",
+            "id": "688277648e74c5ee",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "92b123738d25f7bf",
+    "id": "e51f4c509890f148",
     "type": "split",
     "children": [
       {
-        "id": "95942235f5b409fc",
+        "id": "a8b4bf82496dd36f",
         "type": "tabs",
         "children": [
           {
-            "id": "36bf5ae50cfebedb",
+            "id": "cb091373847a04ee",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -47,7 +47,7 @@
             }
           },
           {
-            "id": "5c387a3343565002",
+            "id": "28f7da431095f662",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -64,7 +64,7 @@
             }
           },
           {
-            "id": "f879694063541cf2",
+            "id": "e08e31d34abb29f5",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,19 +77,18 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 300
   },
   "right": {
-    "id": "51581cd5fa2ada5f",
+    "id": "8e5b69defb98b78b",
     "type": "split",
     "children": [
       {
-        "id": "37cf6586fa9b5f65",
+        "id": "fa1da059db9eac17",
         "type": "tabs",
         "children": [
           {
-            "id": "3eb3fd1c20139e37",
+            "id": "f0349a78e73c59ec",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -108,7 +107,7 @@
             }
           },
           {
-            "id": "ce43e24fe90640ec",
+            "id": "a944df603a6f3766",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -122,7 +121,7 @@
             }
           },
           {
-            "id": "e794995f1cb3700d",
+            "id": "fe1161cd9197fa16",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -135,7 +134,7 @@
             }
           },
           {
-            "id": "fb459acfd6f2bd35",
+            "id": "4fa8eebee3ca4de0",
             "type": "leaf",
             "state": {
               "type": "outline",
@@ -163,17 +162,27 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5fa82b45bd6964e6",
+  "active": "688277648e74c5ee",
   "lastOpenFiles": [
-    "Pasted image 20250131201437.png",
     "Pasted image 20250131201423.png",
+    "README.md",
+    "Pasted image 20250131201437.png",
     "Pasted image 20250131201416.png",
     "Pasted image 20250131201359.png",
     "Pasted image 20250131201344.png",
     "Pasted image 20250131201336.png",
-    "src/MAIN.EXE",
-    "src/MAIN.OBJ",
+    "gitignore",
     "docs/Project Workflow.md",
-    "README.md"
+    "image-1.png",
+    "image.png",
+    "src/pong.asm",
+    "src/interface.asm",
+    "src/TASM.EXE",
+    "src/OBJ.EXE",
+    "src/MASM.EXE",
+    "src/EDIT.COM",
+    "src/DEBUG.EXE",
+    "src/BIN2HEX.EXE",
+    "src/TEST.TR"
   ]
 }
