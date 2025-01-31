@@ -1,5 +1,5 @@
 .MODEL small
-.STACK 600H
+.STACK 400H
 .DATA
     ; PADDLE DATA
     PADDLE_X             DW  181
