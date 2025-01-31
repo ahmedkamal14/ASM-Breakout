@@ -79,16 +79,17 @@ This mode operates in assembly video mode and includes the following exciting fe
 
 ## Controls
 
-To sum up what we have introduced in each mode to ensure you have a wonderful experience with our game:
+To ensure you have a fantastic experience with our game, here’s a summary of how each mode works:
 
-### 1. **Start the mode** after pressing its key from the main menu (not to mess up between those two things)
-  - Press the `F` key to start the two-player mode synchronously. Remember, use **uppercase F**, not **lowercase f**.
- - Press the `Q` key to start the ping pong mode synchronously. Remember, use **uppercase Q**, not **lowercase q**.
- 
-### 2. **Arrow Keys**: Move the paddle 
-
-- To start playing the two-player game, use the `1` and `3` keys on your keyboard (not the left and right arrow keys).
-- To start playing ping pong, use the `2` and `5` keys on your keyboard (not the up and down arrow keys).
+1. **Starting a Mode**
+    
+    - Press the designated key from the main menu to select a mode.
+    - **Two-Player Mode:** Press **F** (uppercase) to start synchronously. Do not use lowercase **f**.
+    - **Ping Pong Mode:** Press **Q** (uppercase) to start synchronously. Do not use lowercase **q**.
+2. **Paddle Controls**
+    
+    - **Two-Player Mode:** Use the **1** and **3** keys to move the paddle (not the left and right arrow keys).
+    - **Ping Pong Mode:** Use the **2** and **5** keys to move the paddle (not the up and down arrow keys).
 ## Acknowledgments
 
 This project was developed as part of a microprocessors course, showcasing game development using low-level assembly programming and serial communication.
