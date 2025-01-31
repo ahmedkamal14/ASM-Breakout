@@ -66,7 +66,7 @@ This mode operates in assembly video mode and includes the following exciting fe
 2. Install an assembler like MASM or TASM.
 3. Clone this repository:
    ```sh
-   git clone <repository-url>
+   git clone https://github.com/ahmedkamal14/ASM-Breakout.git
    ```
 4. Assemble the game:
    ```sh
