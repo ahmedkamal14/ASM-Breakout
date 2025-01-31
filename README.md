@@ -31,6 +31,7 @@ This mode operates in assembly video mode and includes the following exciting fe
 ### <img src="https://i.imgur.com/vI2uXuF.png" width="28" /> To start playing this mode, use the 1 and 3 keys on your keyboard (not the left and right arrow keys). <img src="https://i.imgur.com/vI2uXuF.png" width="28" />
 
 <img width="700" height ="400" align="center" src="Pasted image 20250131201359.png" alt="demo"/>
+
 ### 3. Two Player Mode <img src="https://i.imgur.com/dA4mclF.png" width="24" />
 
 This mode operates in assembly video mode and includes the following exciting features:
@@ -47,6 +48,7 @@ This mode operates in assembly video mode and includes the following exciting fe
 - To start playing, use the `1` and `3` keys on your keyboard (not the left and right arrow keys).
 
 <img width="700" height ="400" align="center" src="Pasted image 20250131201416.png" alt="demo"/>
+
 ### 4. Ping Pong Mode <img src="https://i.imgur.com/H9sDMIn.png" width="24" />
 
 As mentioned earlier, you can access this mode either by pressing `4` from the main menu or by playing the two-player mode, which will automatically transition into the ping pong game after the brick-breaker phase.
