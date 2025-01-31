@@ -1,3 +1,6 @@
+PUBLIC START_CHAT
+
+
 .MODEL small
 .STACK 100h
 .data
@@ -15,7 +18,7 @@
     recFLAG        DB 0
 
 .code
-MAIN PROC
+START_CHAT PROC
                   mov  ax, @data
                   mov  ds, ax
 
@@ -242,8 +245,7 @@ MAIN PROC
                   lea  dx, goodbyeMessage
                   int  21h
 
-    ; Terminate program
-                  mov  ah, 4Ch
-                  int  21h
-MAIN ENDP
-END MAIN
+
+                  RET
+START_CHAT ENDP
+END START_CHAT

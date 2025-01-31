@@ -1,10 +1,10 @@
 ; This File contains functions related to Printing
 
 PUBLIC DRAW_SCORES
+; PUBLIC PRINT_SCORE
 
 EXTRN SCORE
 EXTRN LIVES
-EXTRN ENDING
 EXTRN SCORE_COUNT
 EXTRN LIVES_COUNT
 
@@ -13,14 +13,12 @@ EXTRN LIVES_COUNT
 
 .CODE
 
-DRAW_SCORES PROC
+DRAW_SCORES proc
                 push dx
-                push CX
-                push bx
                 push ax
                  
-                mov  dh, 23           ;row
-                mov  dl, 20            ;col
+                mov  dh, 23            ;row
+                mov  dl, 5             ;col
                 mov  ah, 2
                 int  10h
     
@@ -28,21 +26,18 @@ DRAW_SCORES PROC
                 mov  ah, 9
                 int  21h
     
-                CALL PRINT_SCORE
+                call printScore
     
                 lea  dx,LIVES
                 mov  ah,9
                 int  21h
 
                 pop  ax
-                pop  BX
-                pop  CX
                 pop  dx
                 ret
-DRAW_SCORES ENDP
+DRAW_SCORES endp
 
-
-PRINT_SCORE PROC
+printScore proc
                 push ax
                 push bx
                 push cx
@@ -73,6 +68,6 @@ PRINT_SCORE PROC
                 pop  ax
     
                 ret
-PRINT_SCORE ENDP
+printScore endp
 
 END DRAW_SCORES

@@ -25,9 +25,6 @@ EXTRN SCREEN_SIZE
 
 INPUT_MAIN_LOOP PROC
 
-        
-
-    
     ; CHECK IF A KEY IS PRESSED
                           MOV  AH, 01H
                           INT  16H
