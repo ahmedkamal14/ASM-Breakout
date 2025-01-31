@@ -99,6 +99,10 @@ To ensure you have a fantastic experience with our game, here’s a summary of h
 
 This project was developed as part of a microprocessors course, showcasing game development using low-level assembly programming and serial communication.
 
+## Demo Video <img src="https://i.imgur.com/cAkWtJc.png" width="28" />
+
+https://github.com/user-attachments/assets/d48eade7-4d98-488e-82fc-2169cdaf3ad1
+
 ## Contributors <img src="https://i.imgur.com/SfBB4jV.png" width="28" />
 
 | <a href="https://avatars.githubusercontent.com/u/149877108?s=400&v=4"><img src="https://avatars.githubusercontent.com/u/149877108?s=400&v=4" alt="Amira" width="150"></a> | <a href="https://avatars.githubusercontent.com/u/69475479?v=4"><img src="https://avatars.githubusercontent.com/u/69475479?v=4" alt="Alyaa" width="150"></a> | <a href="https://avatars.githubusercontent.com/u/153025116?v=4"><img src="https://avatars.githubusercontent.com/u/153025116?v=4" alt="Ahmed" width="150"></a> | <a href="https://avatars.githubusercontent.com/u/149868137?v=4"><img src="https://avatars.githubusercontent.com/u/149868137?v=4" alt="Ahmed Hazem" width="150"></a> |
