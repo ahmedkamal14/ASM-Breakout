@@ -103,34 +103,8 @@ This project was developed as part of a microprocessors course, showcasing game 
 
 
 
-<div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap;">
-  <div style="text-align: center;">
-    <a href="https://github.com/AmiraKhalid04" target="_blank">
-      <img src="https://avatars.githubusercontent.com/u/149877108?s=400&v=4" alt="Amira" style="width: 100px; height: 100px; border-radius: 50%;"/>
-    </a>
-    <p><strong><a href="https://github.com/AmiraKhalid04" target="_blank">Amira Khalid</a></strong></p>
-  </div>
-  
-  <div style="text-align: center;">
-    <a href="https://github.com/Alyaa242" target="_blank">
-      <img src="https://avatars.githubusercontent.com/u/69475479?v=4" alt="Alyaa" style="width: 100px; height: 100px; border-radius: 50%;"/>
-    </a>
-    <p><strong><a href="https://github.com/Alyaa242" target="_blank">Alyaa Ali</a></strong></p>
-  </div>
-
-  <div style="text-align: center;">
-    <a href="https://github.com/ahmedkamal14" target="_blank">
-      <img src="https://avatars.githubusercontent.com/u/153025116?v=4" alt="Ahmed Kamal" style="width: 100px; height: 100px; border-radius: 50%;"/>
-    </a>
-    <p><strong><a href="https://github.com/ahmedkamal14" target="_blank">Ahmed Kamal</a></strong></p>
-  </div>
-
-  <div style="text-align: center;">
-    <a href="https://github.com/ahmed-haz" target="_blank">
-      <img src="https://avatars.githubusercontent.com/u/149868137?v=4" alt="Ahmed Hazem" style="width: 100px; height: 100px; border-radius: 50%;"/>
-    </a>
-    <p><strong><a href="https://github.com/ahmed-haz" target="_blank">Ahmed Hazem</a></strong></p>
-  </div>
-</div>
+| <a href="https://avatars.githubusercontent.com/u/149877108?s=400&v=4"><img src="https://avatars.githubusercontent.com/u/149877108?s=400&v=4" alt="Amira" width="150"></a> | <a href="https://avatars.githubusercontent.com/u/69475479?v=4"><img src="https://avatars.githubusercontent.com/u/69475479?v=4" alt="Alyaa" width="150"></a> | <a href="https://avatars.githubusercontent.com/u/153025116?v=4"><img src="https://avatars.githubusercontent.com/u/153025116?v=4" alt="Ahmed" width="150"></a> | <a href="https://avatars.githubusercontent.com/u/149868137?v=4"><img src="https://avatars.githubusercontent.com/u/149868137?v=4" alt="Ahmed Hazem" width="150"></a> |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                                                           [Amira Khalid](https://github.com/AmiraKhalid04)                                                            |                                                           [Alyaa Ali](https://github.com/Alyaa242)                                                            |                                                          [Ahmed Kamal](https://github.com/ahmedkamal14)                                                           |                                                            [Ahmed Hazem](https://github.com/ahmed-haz)                                                            |
 
 
