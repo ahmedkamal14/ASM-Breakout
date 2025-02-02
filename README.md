@@ -28,7 +28,8 @@ This mode operates in assembly video mode and includes the following exciting fe
 - Power-ups that enhance the speed of the paddle and ball.
 - Three lives per player with a scoring system.
 
-### <img src="https://i.imgur.com/vI2uXuF.png?1" width="26" /> To start playing this mode, use the 1 and 3 keys on your keyboard (not the left and right arrow keys). <img src="https://i.imgur.com/vI2uXuF.png?1" width="26" />
+### <img src="https://i.imgur.com/vI2uXuF.png" width="28" /> To start playing this mode, use the 1 and 3 keys on your keyboard (not the left and right arrow keys). <img src="https://i.imgur.com/vI2uXuF.png" width="28" />
+
 <img width="700" height ="400" align="center" src="Pasted image 20250131201359.png" alt="demo"/>
 
 ### 3. Two Player Mode <img src="https://i.imgur.com/dA4mclF.png" width="24" />
@@ -41,7 +42,7 @@ This mode operates in assembly video mode and includes the following exciting fe
 - The winner of the brick-breaker phase gains an advantage in the next phase.
 - <span style="color:yellow">Ping Pong Phase</span> The game transitions into a ping pong match where the winner from the brick-breaker game has a larger paddle.
 
-<img src="https://i.imgur.com/vI2uXuF.png?1" width="22" /> **NOTE**
+<img src="https://i.imgur.com/vI2uXuF.png" width="24" /> **NOTE**
 
 - Press the `F` key to start the two-player mode synchronously. Remember, use **uppercase F**, not **lowercase f**.
 - To start playing, use the `1` and `3` keys on your keyboard (not the left and right arrow keys).
@@ -56,7 +57,7 @@ This mode operates in assembly video mode and includes the following exciting fe
 - A standalone ping pong match using serial communication.
 - The first player to reach the target score wins.
 
-<img src="https://i.imgur.com/vI2uXuF.png?1" width="22" /> **NOTE**
+<img src="https://i.imgur.com/vI2uXuF.png" width="24" /> **NOTE**
 
 - Press the `Q` key to start the two-player mode synchronously. Remember, use **uppercase Q**, not **lowercase q**.
 - To start playing, use the `2` and `5` keys on your keyboard (not the up and down arrow keys).
